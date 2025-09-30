@@ -12,6 +12,7 @@ import { useEffect, useCallback, useState } from 'react'
 import type { Chapter, Verse } from '../../types/surah'
 import { VerseNumber } from '../../components/VerseNumber'
 import { TranslationsDropdown } from '../../components/TranslationsDropdown'
+import { ScrollToTopButton } from '../../components/ScrollToTopButton'
 
 export const Route = createFileRoute('/surah/$id')({
   component: SurahDetail,
@@ -410,6 +411,9 @@ function SurahDetail() {
           </Button>
         </div>
       </div>
+      
+      {/* Scroll to Top Button */}
+      <ScrollToTopButton />
     </div>
   )
 }
