@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useRef, ReactNode } from 'react'
+import { createContext, useContext, useState, useRef, ReactNode, useEffect, useCallback } from 'react'
 import { Verse } from '../types/surah'
 
 interface AudioState {
@@ -21,6 +21,7 @@ interface AudioContextType {
   playNextVerse: () => void
   verses: Verse[]
   setVerses: (verses: Verse[]) => void
+  cleanup: () => void
 }
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined)
@@ -39,8 +40,41 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     isLoading: false,
   })
 
-  const [verses, setVerses] = useState<Verse[]>([])
+  const [verses, setVersesState] = useState<Verse[]>([])
+
+  const setVerses = useCallback((newVerses: Verse[]) => {
+    setVersesState(newVerses)
+  }, [])
   const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  // Cleanup function to stop audio and reset state
+  const cleanup = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current.currentTime = 0
+      audioRef.current.removeEventListener('loadstart', () => {})
+      audioRef.current.removeEventListener('canplay', () => {})
+      audioRef.current.removeEventListener('timeupdate', () => {})
+      audioRef.current.removeEventListener('ended', () => {})
+      audioRef.current.removeEventListener('error', () => {})
+      audioRef.current = null
+    }
+    setAudioState({
+      currentVerse: null,
+      isPlaying: false,
+      currentTime: 0,
+      duration: 0,
+      volume: 1,
+      isLoading: false,
+    })
+  }, [])
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      cleanup()
+    }
+  }, [])
 
   const playVerse = (verse: Verse) => {
     if (!verse.audio?.url) return
@@ -56,6 +90,13 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     const audioUrl = `${AUDIO_BASE_URL}${verse.audio.url}`
     const audio = new Audio(audioUrl)
     audioRef.current = audio
+
+    // Set current verse immediately
+    setAudioState((prev) => ({
+      ...prev,
+      currentVerse: verse,
+      isPlaying: true,
+    }))
 
     audio.addEventListener('loadstart', () => {
       setAudioState((prev) => ({ ...prev, isLoading: true }))
@@ -77,15 +118,39 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     })
 
     audio.addEventListener('ended', () => {
-      setAudioState((prev) => ({
-        ...prev,
-        isPlaying: false,
-        currentTime: 0,
-      }))
-      playNextVerse()
+      // Use the verse parameter directly instead of state
+      if (verse && verses.length > 0) {
+        const currentIndex = verses.findIndex(
+          (v) => v.verse_number === verse.verse_number,
+        )
+        const nextIndex = currentIndex + 1
+
+        if (nextIndex < verses.length) {
+          const nextVerse = verses[nextIndex]
+          if (nextVerse.audio?.url) {
+            playVerse(nextVerse)
+            // Auto-scroll to the next verse
+            setTimeout(() => scrollToVerse(nextVerse.id), 100)
+          }
+        } else {
+          setAudioState((prev) => ({
+            ...prev,
+            isPlaying: false,
+            currentTime: 0,
+            currentVerse: null,
+          }))
+        }
+      } else {
+        setAudioState((prev) => ({
+          ...prev,
+          isPlaying: false,
+          currentTime: 0,
+        }))
+      }
     })
 
-    audio.addEventListener('error', () => {
+    audio.addEventListener('error', (e) => {
+      console.error('Audio error:', e, 'URL:', audioUrl)
       setAudioState((prev) => ({
         ...prev,
         isLoading: false,
@@ -94,13 +159,15 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     })
 
     audio.volume = audioState.volume
-    audio.play()
-
-    setAudioState((prev) => ({
-      ...prev,
-      currentVerse: verse,
-      isPlaying: true,
-    }))
+    
+    audio.play().catch(error => {
+      console.error('Failed to play audio:', error)
+      setAudioState((prev) => ({
+        ...prev,
+        isLoading: false,
+        isPlaying: false,
+      }))
+    })
   }
 
   const pauseAudio = () => {
@@ -159,8 +226,9 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const playNextVerse = () => {
     if (!audioState.currentVerse || verses.length === 0) return
 
+    // Find current verse by verse_number instead of id for proper sequencing
     const currentIndex = verses.findIndex(
-      (v) => v.id === audioState.currentVerse!.id,
+      (v) => v.verse_number === audioState.currentVerse!.verse_number,
     )
     const nextIndex = currentIndex + 1
 
@@ -200,6 +268,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
         playNextVerse,
         verses,
         setVerses,
+        cleanup,
       }}
     >
       {children}

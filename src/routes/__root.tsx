@@ -14,6 +14,7 @@ import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
 import { TranslationProvider } from '../contexts/TranslationContext'
+import { AudioProvider } from '../contexts/AudioContext'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -53,7 +54,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         {/* <Header /> */}
         <TranslationProvider>
-          {children}
+          <AudioProvider>
+            {children}
+          </AudioProvider>
         </TranslationProvider>
         <TanstackDevtools
           config={{
