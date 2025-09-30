@@ -77,7 +77,10 @@ const fetchVersesByChapter = async (
 }
 
 // Fetch Bismillah verse from Surah 1 verse 1
-const fetchBismillahVerse = async (translationId: string, recitationId: string): Promise<Verse | null> => {
+const fetchBismillahVerse = async (
+  translationId: string,
+  recitationId: string,
+): Promise<Verse | null> => {
   try {
     const response = await fetch(
       `/api/verses/1?page=1&per_page=1&translation_id=${translationId}&recitation_id=${recitationId}`,
@@ -86,7 +89,7 @@ const fetchBismillahVerse = async (translationId: string, recitationId: string):
 
     if (data.success && data.data && data.data.verses.length > 0) {
       const bismillahVerse = data.data.verses[0] // Get the first verse (Bismillah)
-      
+
       // For non-Surah 1, treat Bismillah as verse 0 to avoid conflicts with actual verse 1
       return {
         ...bismillahVerse,
@@ -136,11 +139,10 @@ function SurahDetail() {
   })
 
   // Fetch Bismillah verse for non-Fatihah and non-Tawbah surahs
-  const {
-    data: bismillahVerse,
-  } = useQuery({
+  const { data: bismillahVerse } = useQuery({
     queryKey: ['bismillah', selectedTranslationId, selectedRecitationId],
-    queryFn: () => fetchBismillahVerse(selectedTranslationId, selectedRecitationId),
+    queryFn: () =>
+      fetchBismillahVerse(selectedTranslationId, selectedRecitationId),
     enabled: !!(chapter && chapter.id !== 1 && chapter.id !== 9), // Only fetch for surahs that need Bismillah
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
@@ -156,7 +158,14 @@ function SurahDetail() {
     error: versesError,
   } = useInfiniteQuery({
     queryKey: ['verses', id, selectedTranslationId, selectedRecitationId],
-    queryFn: ({ pageParam = 1 }) => fetchVersesByChapter(id, selectedTranslationId, selectedRecitationId, pageParam, 50),
+    queryFn: ({ pageParam = 1 }) =>
+      fetchVersesByChapter(
+        id,
+        selectedTranslationId,
+        selectedRecitationId,
+        pageParam,
+        50,
+      ),
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.hasMore ? allPages.length + 1 : undefined
     },
@@ -246,7 +255,7 @@ function SurahDetail() {
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center pt-4">
-            <Button asChild className="bg-red-600 hover:bg-red-700 text-white">
+            <Button asChild className="bg-red-600 hover:bg-red-700 text-black">
               <Link to="/surah">← Back to Surah List</Link>
             </Button>
           </CardContent>
@@ -257,17 +266,23 @@ function SurahDetail() {
 
   return (
     <AudioProvider>
-      <SurahDetailWithAudio verses={
-        // Create combined verses array with Bismillah as verse 0 for proper audio sequencing
-        chapter && chapter.id !== 9 && chapter.id !== 1 && bismillahVerse 
-          ? [bismillahVerse, ...verses]
-          : verses
-      }>
+      <SurahDetailWithAudio
+        verses={
+          // Create combined verses array with Bismillah as verse 0 for proper audio sequencing
+          chapter && chapter.id !== 9 && chapter.id !== 1 && bismillahVerse
+            ? [bismillahVerse, ...verses]
+            : verses
+        }
+      >
         <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50">
           {/* Sticky Header */}
-          <div className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-primary-200 transition-all duration-300 ${
-            isHeaderSticky ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
-          }`}>
+          <div
+            className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-primary-200 transition-all duration-300 ${
+              isHeaderSticky
+                ? 'translate-y-0 opacity-100'
+                : '-translate-y-full opacity-0'
+            }`}
+          >
             <div className="container mx-auto px-4 py-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -280,7 +295,7 @@ function SurahDetail() {
                 </div>
                 {chapter && (
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                    <div className="w-8 h-8 bg-primary-600 text-black rounded-full flex items-center justify-center font-bold text-sm">
                       {chapter.id}
                     </div>
                     <div className="text-right">
@@ -298,179 +313,64 @@ function SurahDetail() {
           </div>
 
           <div className="container mx-auto px-4 py-8">
-        {/* Navigation */}
-        <div className="flex items-center gap-4 mb-8">
-          <Button asChild variant="outline">
-            <Link to="/surah">← Back to Surahs</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link to="/">🏠 Home</Link>
-          </Button>
-        </div>
-
-        {/* Surah Header */}
-        <Card className="mb-8 border-primary-200">
-          <CardHeader className="text-center">
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <div className="w-16 h-16 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-xl">
-                {chapter.id}
-              </div>
-              <div>
-                <CardTitle className="text-3xl text-primary-800 mb-2">
-                  {chapter.name_simple}
-                </CardTitle>
-                <p className="text-4xl font-arabic text-primary-600 mb-2">
-                  {chapter.name_arabic}
-                </p>
-              </div>
+            {/* Navigation */}
+            <div className="flex items-center gap-4 mb-8">
+              <Button asChild variant="outline">
+                <Link to="/surah">← Back to Surahs</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/">🏠 Home</Link>
+              </Button>
             </div>
 
-            <CardDescription className="text-lg mb-4">
-              <span className="font-semibold text-primary-700">
-                {chapter.translated_name.name}
-              </span>
-            </CardDescription>
-
-            {/* Translations and Recitation Dropdowns */}
-            <div className="mb-6 flex flex-col sm:flex-row justify-center gap-4 px-4">
-              <div className="w-full sm:w-auto">
-                <TranslationsDropdown />
-              </div>
-              <div className="w-full sm:w-auto">
-                <RecitationDropdown />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
-              <span
-                className={`px-3 py-1 rounded-full font-medium ${
-                  chapter.revelation_place === 'mecca'
-                    ? 'bg-secondary-100 text-secondary-700'
-                    : 'bg-info-100 text-info-700'
-                }`}
-              >
-                {chapter.revelation_place === 'mecca' ? 'Meccan' : 'Medinan'}
-              </span>
-              <span className="flex items-center gap-1">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                  />
-                </svg>
-                {chapter.verses_count} verses
-              </span>
-            </div>
-          </CardHeader>
-        </Card>
-
-        {/* Dynamic Bismillah (except for At-Tawbah and Al-Fatihah since it's included as verse 1) */}
-        {chapter.id !== 9 && chapter.id !== 1 && bismillahVerse && (
-          <Card className="mb-8 bg-gradient-to-r from-primary-50 to-secondary-50 border-primary-200">
-            <CardContent className="py-8">
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-4 mb-4">
-                  <p className="text-3xl font-arabic text-primary-700">
-                    {bismillahVerse.text_uthmani}
-                  </p>
-                  <VersePlayButton verse={bismillahVerse} />
-                </div>
-                <div className="text-lg text-primary-600 font-medium">
-                  <FootnoteText text={bismillahVerse.translations[0]?.text || ''} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Verses */}
-        <div className="space-y-6">
-          {verses.length > 0 ? (
-            verses.map((verse: Verse) => (
-              <Card
-                key={verse.id}
-                id={`verse-${verse.id}`}
-                className="hover:shadow-md transition-shadow border-primary-100"
-              >
-                <CardContent className="py-6">
-                  <div className="flex items-start gap-4">
-                    <VerseNumber
-                      number={verse.verse_number}
-                      className="flex-shrink-0 mt-2"
-                    />
-                    <div className="flex-1 space-y-4">
-                      {/* Arabic Text */}
-                      <div className="text-right">
-                        <p className="text-3xl font-arabic text-primary-800 leading-loose mb-4">
-                          {verse.text_uthmani}
-                        </p>
-                      </div>
-
-                      {/* Translations */}
-                      {verse.translations && verse.translations.length > 0 && (
-                        <div className="space-y-3">
-                          {verse.translations.map((translation) => (
-                            <div
-                              key={translation.id}
-                              className="bg-primary-50 p-4 rounded-lg border-l-4 border-primary-300"
-                            >
-                              <FootnoteText 
-                                text={translation.text}
-                                className="text-primary-700"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Play Button */}
-                    <div className="flex-shrink-0 mt-2">
-                      <VersePlayButton verse={verse} />
-                    </div>
+            {/* Surah Header */}
+            <Card className="mb-8 border-primary-200">
+              <CardHeader className="text-center">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary-600 text-black rounded-full flex items-center justify-center font-bold text-lg sm:text-xl">
+                    {chapter.id}
                   </div>
-                </CardContent>
-              </Card>
-            ))
-          ) : (
-            <Card className="text-center py-8">
-              <CardContent>
-                <p className="text-muted-foreground">
-                  No verses available for this chapter.
-                </p>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Infinite Scroll Loading Indicator */}
-          {isFetchingNextPage && (
-            <Card className="border-primary-200">
-              <CardContent className="py-8">
-                <div className="flex items-center justify-center space-x-3">
-                  <div className="w-6 h-6 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
-                  <p className="text-primary-600 font-medium">
-                    Loading more verses...
-                  </p>
+                  <div className="text-center sm:text-left">
+                    <CardTitle className="text-xl sm:text-2xl lg:text-3xl text-primary-800 mb-2">
+                      {chapter.name_simple}
+                    </CardTitle>
+                    <p className="text-2xl sm:text-3xl lg:text-4xl font-arabic text-primary-600 mb-2">
+                      {chapter.name_arabic}
+                    </p>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          )}
 
-          {/* End of verses indicator */}
-          {!hasNextPage && verses.length > 0 && (
-            <Card className="border-primary-200 bg-gradient-to-r from-primary-50 to-secondary-50">
-              <CardContent className="py-6">
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <CardDescription className="text-lg mb-4">
+                  <span className="font-semibold text-primary-700">
+                    {chapter.translated_name.name}
+                  </span>
+                </CardDescription>
+
+                {/* Translations and Recitation Dropdowns */}
+                <div className="mb-6 flex flex-col sm:flex-row justify-center gap-4 px-2 sm:px-4">
+                  <div className="w-full sm:w-auto">
+                    <TranslationsDropdown />
+                  </div>
+                  <div className="w-full sm:w-auto">
+                    <RecitationDropdown />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
+                  <span
+                    className={`px-3 py-1 rounded-full font-medium ${
+                      chapter.revelation_place === 'mecca'
+                        ? 'bg-secondary-100 text-secondary-700'
+                        : 'bg-info-100 text-info-700'
+                    }`}
+                  >
+                    {chapter.revelation_place === 'mecca'
+                      ? 'Meccan'
+                      : 'Medinan'}
+                  </span>
+                  <span className="flex items-center gap-1">
                     <svg
-                      className="w-6 h-6 text-primary-600"
+                      className="w-4 h-4"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -479,53 +379,181 @@ function SurahDetail() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M5 13l4 4L19 7"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
                       />
                     </svg>
-                  </div>
-                  <p className="text-primary-700 font-medium mb-1">
-                    End of Surah
-                  </p>
-                  <p className="text-sm text-primary-600">
-                    You have read all verses of {chapter.name_simple}
-                  </p>
+                    {chapter.verses_count} verses
+                  </span>
                 </div>
-              </CardContent>
+              </CardHeader>
             </Card>
-          )}
+
+            {/* Dynamic Bismillah (except for At-Tawbah and Al-Fatihah since it's included as verse 1) */}
+            {chapter.id !== 9 && chapter.id !== 1 && bismillahVerse && (
+              <Card className="mb-8 bg-gradient-to-r from-primary-50 to-secondary-50 border-primary-200">
+                <CardContent className="py-8">
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                      <p className="text-3xl font-arabic text-primary-700">
+                        {bismillahVerse.text_uthmani}
+                      </p>
+                      <VersePlayButton verse={bismillahVerse} />
+                    </div>
+                    <div className="text-lg text-primary-600 font-medium">
+                      <FootnoteText
+                        text={bismillahVerse.translations[0]?.text || ''}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Verses */}
+            <div className="space-y-6">
+              {verses.length > 0 ? (
+                verses.map((verse: Verse) => (
+                  <Card
+                    key={verse.id}
+                    id={`verse-${verse.id}`}
+                    className="hover:shadow-md transition-shadow border-primary-100"
+                  >
+                    <CardContent className="py-6">
+                      {/* Top section with verse number, Arabic text, and play button */}
+                      <div className="flex items-start gap-4 mb-4">
+                        <VerseNumber
+                          number={verse.verse_number}
+                          className="flex-shrink-0 mt-2"
+                        />
+                        <div className="flex-1 min-w-0">
+                          {/* Arabic Text */}
+                          <div className="text-right">
+                            <p className="text-3xl font-arabic text-primary-800 leading-loose">
+                              {verse.text_uthmani}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Play Button */}
+                        <div className="flex-shrink-0 mt-2">
+                          <VersePlayButton verse={verse} />
+                        </div>
+                      </div>
+
+                      {/* Translations - Full width on mobile, breaking out of card padding */}
+                      {verse.translations &&
+                        verse.translations.length > 0 && (
+                          <div className="-mx-6 px-2 sm:mx-0 sm:px-0">
+                            <div className="space-y-3">
+                              {verse.translations.map((translation) => (
+                                <div
+                                  key={translation.id}
+                                  className="bg-primary-50 p-4 sm:p-6 rounded-none sm:rounded-lg border-l-4 border-primary-300 mx-2 sm:mx-0"
+                                >
+                                  <FootnoteText
+                                    text={translation.text}
+                                    className="text-primary-700 text-base sm:text-lg leading-relaxed"
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <Card className="text-center py-8">
+                  <CardContent>
+                    <p className="text-muted-foreground">
+                      No verses available for this chapter.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Infinite Scroll Loading Indicator */}
+              {isFetchingNextPage && (
+                <Card className="border-primary-200">
+                  <CardContent className="py-8">
+                    <div className="flex items-center justify-center space-x-3">
+                      <div className="w-6 h-6 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
+                      <p className="text-primary-600 font-medium">
+                        Loading more verses...
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* End of verses indicator */}
+              {!hasNextPage && verses.length > 0 && (
+                <Card className="border-primary-200 bg-gradient-to-r from-primary-50 to-secondary-50">
+                  <CardContent className="py-6">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg
+                          className="w-6 h-6 text-primary-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </div>
+                      <p className="text-primary-700 font-medium mb-1">
+                        End of Surah
+                      </p>
+                      <p className="text-sm text-primary-600">
+                        You have read all verses of {chapter.name_simple}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            {/* Navigation Footer */}
+            <div className="flex items-center justify-between mt-12 pt-8 border-t border-primary-200">
+              <Button asChild variant="outline">
+                <Link
+                  to={chapter.id > 1 ? '/surah/$id' : '/surah'}
+                  params={
+                    chapter.id > 1
+                      ? { id: (chapter.id - 1).toString() }
+                      : undefined
+                  }
+                >
+                  ← Previous Surah
+                </Link>
+              </Button>
+
+              <Button asChild variant="outline">
+                <Link to="/surah">📖 All Surahs</Link>
+              </Button>
+
+              <Button asChild variant="outline">
+                <Link
+                  to="/surah/$id"
+                  params={{ id: (chapter.id + 1).toString() }}
+                >
+                  Next Surah →
+                </Link>
+              </Button>
+            </div>
+          </div>
         </div>
 
-        {/* Navigation Footer */}
-        <div className="flex items-center justify-between mt-12 pt-8 border-t border-primary-200">
-          <Button asChild variant="outline">
-            <Link
-              to={chapter.id > 1 ? '/surah/$id' : '/surah'}
-              params={
-                chapter.id > 1 ? { id: (chapter.id - 1).toString() } : undefined
-              }
-            >
-              ← Previous Surah
-            </Link>
-          </Button>
+        {/* Scroll to Top Button */}
+        <ScrollToTopButton />
 
-          <Button asChild variant="outline">
-            <Link to="/surah">📖 All Surahs</Link>
-          </Button>
-
-          <Button asChild variant="outline">
-            <Link to="/surah/$id" params={{ id: (chapter.id + 1).toString() }}>
-              Next Surah →
-            </Link>
-          </Button>
-        </div>
-        </div>
-        </div>
-      
-      {/* Scroll to Top Button */}
-      <ScrollToTopButton />
-      
-      {/* Mini Player */}
-      <MiniPlayer />
+        {/* Mini Player */}
+        <MiniPlayer />
       </SurahDetailWithAudio>
     </AudioProvider>
   )

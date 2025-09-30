@@ -58,17 +58,17 @@ export function RecitationDropdown({}: RecitationDropdownProps) {
   const selectedRecitation = sortedRecitations?.find(r => r.id.toString() === selectedRecitationId)
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm font-medium text-primary-700">Recitation:</span>
+    <div className="flex items-center gap-2 min-w-0">
+      <span className="text-sm font-medium text-primary-700 shrink-0">Recitation:</span>
       <Select value={selectedRecitationId} onValueChange={setSelectedRecitationId}>
-        <SelectTrigger className="w-[280px]">
+        <SelectTrigger className="w-full min-w-0 max-w-[280px]">
           <SelectValue>
             {selectedRecitation && (
-              <div className="flex items-center gap-2">
-                <span>🎵</span>
-                <span>{selectedRecitation.reciter_name}</span>
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="shrink-0">🎵</span>
+                <span className="truncate">{selectedRecitation.reciter_name}</span>
                 {selectedRecitation.style && (
-                  <span className="text-xs text-muted-foreground">({selectedRecitation.style})</span>
+                  <span className="text-xs text-muted-foreground shrink-0">({selectedRecitation.style})</span>
                 )}
               </div>
             )}
@@ -77,11 +77,11 @@ export function RecitationDropdown({}: RecitationDropdownProps) {
         <SelectContent>
           {sortedRecitations?.map((recitation) => (
             <SelectItem key={recitation.id} value={recitation.id.toString()}>
-              <div className="flex items-center gap-2">
-                <span>🎵</span>
-                <span>{recitation.reciter_name}</span>
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="shrink-0">🎵</span>
+                <span className="truncate">{recitation.reciter_name}</span>
                 {recitation.style && (
-                  <span className="text-xs text-muted-foreground">({recitation.style})</span>
+                  <span className="text-xs text-muted-foreground shrink-0">({recitation.style})</span>
                 )}
               </div>
             </SelectItem>

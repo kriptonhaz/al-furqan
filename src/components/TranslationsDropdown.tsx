@@ -317,16 +317,16 @@ export function TranslationsDropdown({}: TranslationsDropdownProps) {
   const selectedTranslation = sortedTranslations?.find(t => t.id.toString() === selectedTranslationId)
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm font-medium text-primary-700">Translation:</span>
+    <div className="flex items-center gap-2 min-w-0">
+      <span className="text-sm font-medium text-primary-700 shrink-0">Translation:</span>
       <Select value={selectedTranslationId} onValueChange={setSelectedTranslationId}>
-        <SelectTrigger className="w-[280px]">
+        <SelectTrigger className="w-full min-w-0 max-w-[280px]">
           <SelectValue>
             {selectedTranslation && (
-              <div className="flex items-center gap-2">
-                <span>{getLanguageFlag(selectedTranslation.language_name)}</span>
-                <span>({getLanguageCode(selectedTranslation.language_name)})</span>
-                <span>{selectedTranslation.translated_name.name}</span>
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="shrink-0">{getLanguageFlag(selectedTranslation.language_name)}</span>
+                <span className="shrink-0">({getLanguageCode(selectedTranslation.language_name)})</span>
+                <span className="truncate">{selectedTranslation.translated_name.name}</span>
               </div>
             )}
           </SelectValue>
@@ -334,10 +334,10 @@ export function TranslationsDropdown({}: TranslationsDropdownProps) {
         <SelectContent>
           {sortedTranslations?.map((translation) => (
             <SelectItem key={translation.id} value={translation.id.toString()}>
-              <div className="flex items-center gap-2">
-                <span>{getLanguageFlag(translation.language_name)}</span>
-                <span>({getLanguageCode(translation.language_name)})</span>
-                <span>{translation.translated_name.name}</span>
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="shrink-0">{getLanguageFlag(translation.language_name)}</span>
+                <span className="shrink-0">({getLanguageCode(translation.language_name)})</span>
+                <span className="truncate">{translation.translated_name.name}</span>
               </div>
             </SelectItem>
           ))}
