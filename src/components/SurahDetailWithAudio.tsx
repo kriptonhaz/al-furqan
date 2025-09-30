@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useAudio } from '../contexts/AudioContext'
+import { setVerses } from '../stores/audioStore'
 import type { Verse } from '../types/surah'
 
 interface SurahDetailWithAudioProps {
@@ -8,12 +8,10 @@ interface SurahDetailWithAudioProps {
 }
 
 export function SurahDetailWithAudio({ verses, children }: SurahDetailWithAudioProps) {
-  const { setVerses } = useAudio()
-
-  // Update verses in audio context when they change
+  // Update verses in audio store when they change
   useEffect(() => {
     setVerses(verses)
-  }, [verses, setVerses])
+  }, [verses])
 
   return <>{children}</>
 }

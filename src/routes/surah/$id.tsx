@@ -14,13 +14,12 @@ import { VerseNumber } from '../../components/VerseNumber'
 import { TranslationsDropdown } from '../../components/TranslationsDropdown'
 import { RecitationDropdown } from '../../components/RecitationDropdown'
 import { ScrollToTopButton } from '../../components/ScrollToTopButton'
-import { useTranslation } from '../../contexts/TranslationContext'
-import { useRecitation } from '../../contexts/RecitationContext'
+import { useSelectedTranslations } from '../../stores/translationStore'
+import { useSelectedRecitation } from '../../stores/recitationStore'
 import { FootnoteText } from '../../components/FootnoteText'
-import { AudioProvider } from '../../contexts/AudioContext'
+import { SurahDetailWithAudio } from '../../components/SurahDetailWithAudio'
 import { MiniPlayer } from '../../components/MiniPlayer'
 import { VersePlayButton } from '../../components/VersePlayButton'
-import { SurahDetailWithAudio } from '../../components/SurahDetailWithAudio'
 
 export const Route = createFileRoute('/surah/$id')({
   component: SurahDetail,
@@ -106,8 +105,12 @@ const fetchBismillahVerse = async (
 
 function SurahDetail() {
   const { id } = Route.useParams()
-  const { selectedTranslationId } = useTranslation()
-  const { selectedRecitationId } = useRecitation()
+  const selectedTranslations = useSelectedTranslations()
+  const selectedRecitation = useSelectedRecitation()
+  
+  // Get the first selected translation for backward compatibility
+  const selectedTranslationId = selectedTranslations.length > 0 ? selectedTranslations[0].id.toString() : '131'
+  const selectedRecitationId = selectedRecitation?.id.toString() || '7'
   const [isHeaderSticky, setIsHeaderSticky] = useState(false)
 
   // Scroll to top when surah changes
@@ -265,11 +268,10 @@ function SurahDetail() {
   }
 
   return (
-    <AudioProvider>
-      <SurahDetailWithAudio
-        verses={
-          // Create combined verses array with Bismillah as verse 0 for proper audio sequencing
-          chapter && chapter.id !== 9 && chapter.id !== 1 && bismillahVerse
+    <SurahDetailWithAudio
+      verses={
+        // Create combined verses array with Bismillah as verse 0 for proper audio sequencing
+        chapter && chapter.id !== 9 && chapter.id !== 1 && bismillahVerse
             ? [bismillahVerse, ...verses]
             : verses
         }
@@ -555,6 +557,5 @@ function SurahDetail() {
         {/* Mini Player */}
         <MiniPlayer />
       </SurahDetailWithAudio>
-    </AudioProvider>
   )
 }

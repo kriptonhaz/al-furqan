@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from './ui/select'
 import type { Recitation } from '../types/surah'
-import { useRecitation } from '../contexts/RecitationContext'
+import { useSelectedRecitation, useAvailableRecitations, setSelectedRecitation, setAvailableRecitations } from '../stores/recitationStore'
 
 interface RecitationDropdownProps {
   // Remove props since we'll use global state
@@ -28,11 +28,18 @@ const fetchRecitations = async (): Promise<Recitation[]> => {
 }
 
 export function RecitationDropdown({}: RecitationDropdownProps) {
-  const { selectedRecitationId, setSelectedRecitationId } = useRecitation()
+  const selectedRecitation = useSelectedRecitation()
+  const availableRecitations = useAvailableRecitations()
+  
   const { data: recitations, isLoading, error } = useQuery({
     queryKey: ['recitations'],
     queryFn: fetchRecitations,
   })
+
+  // Update available recitations when data is fetched
+  if (recitations && recitations.length > 0 && availableRecitations.length === 0) {
+    setAvailableRecitations(recitations)
+  }
 
   if (isLoading) {
     return (
@@ -51,31 +58,39 @@ export function RecitationDropdown({}: RecitationDropdownProps) {
   }
 
   // Sort recitations alphabetically by reciter name
-  const sortedRecitations = recitations?.slice().sort((a, b) => 
+  const sortedRecitations = availableRecitations.slice().sort((a: Recitation, b: Recitation) => 
     a.reciter_name.localeCompare(b.reciter_name)
   )
 
-  const selectedRecitation = sortedRecitations?.find(r => r.id.toString() === selectedRecitationId)
+  const selectedRecitationObj = sortedRecitations.find((r: Recitation) => r.id === selectedRecitation?.id)
 
   return (
     <div className="flex items-center gap-2 min-w-0">
       <span className="text-sm font-medium text-primary-700 shrink-0">Recitation:</span>
-      <Select value={selectedRecitationId} onValueChange={setSelectedRecitationId}>
+      <Select 
+        value={selectedRecitation?.id?.toString() || ''} 
+        onValueChange={(value) => {
+          const recitation = sortedRecitations.find((r: Recitation) => r.id.toString() === value)
+          if (recitation) {
+            setSelectedRecitation(recitation)
+          }
+        }}
+      >
         <SelectTrigger className="w-full min-w-0 max-w-[280px]">
           <SelectValue>
-            {selectedRecitation && (
+            {selectedRecitationObj && (
               <div className="flex items-center gap-2 min-w-0">
                 <span className="shrink-0">🎵</span>
-                <span className="truncate">{selectedRecitation.reciter_name}</span>
-                {selectedRecitation.style && (
-                  <span className="text-xs text-muted-foreground shrink-0">({selectedRecitation.style})</span>
+                <span className="truncate">{selectedRecitationObj.reciter_name}</span>
+                {selectedRecitationObj.style && (
+                  <span className="text-xs text-muted-foreground shrink-0">({selectedRecitationObj.style})</span>
                 )}
               </div>
             )}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {sortedRecitations?.map((recitation) => (
+          {sortedRecitations.map((recitation: Recitation) => (
             <SelectItem key={recitation.id} value={recitation.id.toString()}>
               <div className="flex items-center gap-2 min-w-0">
                 <span className="shrink-0">🎵</span>

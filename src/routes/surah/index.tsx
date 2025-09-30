@@ -8,8 +8,8 @@ import {
   CardTitle,
 } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
-import { LanguageDropdown } from '../../components/LanguageDropdown'
-import { useLanguage } from '../../contexts/LanguageContext'
+import LanguageDropdown from '../../components/LanguageDropdown'
+import { useCurrentLanguage } from '../../stores/languageStore'
 import type { Chapter } from '../../types/surah'
 
 // Function to fetch Surahs from our API
@@ -29,7 +29,7 @@ export const Route = createFileRoute('/surah/')({
 })
 
 function SurahList() {
-  const { selectedLanguageCode } = useLanguage()
+  const selectedLanguageCode = useCurrentLanguage()
   
   const {
     data: surahs = [],

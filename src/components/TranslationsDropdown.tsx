@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from './ui/select'
 import type { Translation, TranslationsResponse } from '../types/translation'
-import { useTranslation } from '../contexts/TranslationContext'
+import { useSelectedTranslations, useAvailableTranslations, setSelectedTranslations, setAvailableTranslations } from '../stores/translationStore'
 
 interface TranslationsDropdownProps {
   // Remove the props since we'll use global state
@@ -287,11 +287,18 @@ const getLanguageCode = (languageName: string): string => {
 }
 
 export function TranslationsDropdown({}: TranslationsDropdownProps) {
-  const { selectedTranslationId, setSelectedTranslationId } = useTranslation()
+  const selectedTranslations = useSelectedTranslations()
+  const availableTranslations = useAvailableTranslations()
+  
   const { data: translations, isLoading, error } = useQuery({
     queryKey: ['translations'],
     queryFn: fetchTranslations,
   })
+
+  // Update available translations when data is fetched
+  if (translations && translations.length > 0 && availableTranslations.length === 0) {
+    setAvailableTranslations(translations)
+  }
 
   if (isLoading) {
     return (
@@ -310,16 +317,25 @@ export function TranslationsDropdown({}: TranslationsDropdownProps) {
   }
 
   // Sort translations alphabetically by language name
-  const sortedTranslations = translations?.slice().sort((a, b) => 
+  const sortedTranslations = availableTranslations.slice().sort((a: Translation, b: Translation) => 
     a.language_name.localeCompare(b.language_name)
   )
 
-  const selectedTranslation = sortedTranslations?.find(t => t.id.toString() === selectedTranslationId)
+  // For now, use the first selected translation for display (single selection)
+  const selectedTranslation = selectedTranslations.length > 0 ? selectedTranslations[0] : null
 
   return (
     <div className="flex items-center gap-2 min-w-0">
       <span className="text-sm font-medium text-primary-700 shrink-0">Translation:</span>
-      <Select value={selectedTranslationId} onValueChange={setSelectedTranslationId}>
+      <Select 
+        value={selectedTranslation?.id?.toString() || ''} 
+        onValueChange={(value) => {
+          const translation = sortedTranslations.find((t: Translation) => t.id.toString() === value)
+          if (translation) {
+            setSelectedTranslations([translation])
+          }
+        }}
+      >
         <SelectTrigger className="w-full min-w-0 max-w-[280px]">
           <SelectValue>
             {selectedTranslation && (
@@ -332,15 +348,15 @@ export function TranslationsDropdown({}: TranslationsDropdownProps) {
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {sortedTranslations?.map((translation) => (
-            <SelectItem key={translation.id} value={translation.id.toString()}>
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="shrink-0">{getLanguageFlag(translation.language_name)}</span>
-                <span className="shrink-0">({getLanguageCode(translation.language_name)})</span>
-                <span className="truncate">{translation.translated_name.name}</span>
-              </div>
-            </SelectItem>
-          ))}
+          {sortedTranslations.map((translation: Translation) => (
+          <SelectItem key={translation.id} value={translation.id.toString()}>
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="shrink-0">{getLanguageFlag(translation.language_name)}</span>
+              <span className="shrink-0">({getLanguageCode(translation.language_name)})</span>
+              <span className="truncate">{translation.translated_name.name}</span>
+            </div>
+          </SelectItem>
+        ))}
         </SelectContent>
       </Select>
     </div>

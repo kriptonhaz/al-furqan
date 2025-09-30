@@ -1,4 +1,4 @@
-import { useAudio } from '../contexts/AudioContext'
+import { useAudioState, pauseAudio, resumeAudio, stopAudio, setVolume, seekTo } from '../stores/audioStore'
 import { Button } from './ui/button'
 import { Slider } from './ui/slider'
 import { Card, CardContent } from './ui/card'
@@ -6,14 +6,7 @@ import { Play, Pause, Square, Volume2, VolumeX } from 'lucide-react'
 import { useState } from 'react'
 
 export function MiniPlayer() {
-  const { 
-    audioState, 
-    pauseAudio, 
-    resumeAudio, 
-    stopAudio, 
-    setVolume, 
-    seekTo 
-  } = useAudio()
+  const audioState = useAudioState()
   
   const [isMuted, setIsMuted] = useState(false)
   const [previousVolume, setPreviousVolume] = useState(1)

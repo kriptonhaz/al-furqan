@@ -1,6 +1,6 @@
 import { Play, Pause, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useAudio } from "@/contexts/AudioContext"
+import { useAudioState, playVerse, pauseAudio, resumeAudio } from "@/stores/audioStore"
 import type { Verse } from "@/types/surah"
 
 interface VersePlayButtonProps {
@@ -8,12 +8,7 @@ interface VersePlayButtonProps {
 }
 
 export function VersePlayButton({ verse }: VersePlayButtonProps) {
-  const { 
-    audioState, 
-    playVerse, 
-    pauseAudio, 
-    resumeAudio 
-  } = useAudio()
+  const audioState = useAudioState()
 
   const isCurrentVerse = audioState.currentVerse?.verse_number === verse.verse_number
   const isCurrentlyPlaying = isCurrentVerse && audioState.isPlaying

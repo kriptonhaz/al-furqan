@@ -8,15 +8,9 @@ import { TanstackDevtools } from '@tanstack/react-devtools'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
-import StoreDevtools from '../lib/demo-store-devtools'
-
 import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
-import { TranslationProvider } from '../contexts/TranslationContext'
-import { RecitationProvider } from '../contexts/RecitationContext'
-import { AudioProvider } from '../contexts/AudioContext'
-import { LanguageProvider } from '../contexts/LanguageContext'
 import { QuranChatbot } from '../components/QuranChatbot'
 
 interface MyRouterContext {
@@ -55,16 +49,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <LanguageProvider>
-          <TranslationProvider>
-            <RecitationProvider>
-              <AudioProvider>
-                {children}
-                <QuranChatbot />
-              </AudioProvider>
-            </RecitationProvider>
-          </TranslationProvider>
-        </LanguageProvider>
+        {children}
+        <QuranChatbot />
         <TanstackDevtools
           config={{
             position: 'bottom-left',
@@ -75,7 +61,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               render: <TanStackRouterDevtoolsPanel />,
             },
             TanStackQueryDevtools,
-            StoreDevtools,
           ]}
         />
         <Scripts />

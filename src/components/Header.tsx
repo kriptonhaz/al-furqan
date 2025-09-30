@@ -1,4 +1,4 @@
-import { LanguageDropdown } from './LanguageDropdown'
+import LanguageDropdown from './LanguageDropdown'
 
 export default function Header() {
   return (

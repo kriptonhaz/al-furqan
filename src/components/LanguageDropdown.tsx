@@ -1,84 +1,82 @@
 import { useQuery } from '@tanstack/react-query'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './ui/select'
-import type { Language, LanguagesApiResponse } from '../types/language'
-import { useLanguage } from '../contexts/LanguageContext'
+import { useState } from 'react'
+import { fetchLanguages } from '../lib/api'
+import { useCurrentLanguage, useAvailableLanguages, setCurrentLanguage, setAvailableLanguages } from '../stores/languageStore'
+import type { Language } from '../types/language'
 
-interface LanguageDropdownProps {
-  // Remove props since we'll use global state
-}
+export default function LanguageDropdown() {
+  const [isOpen, setIsOpen] = useState(false)
+  const currentLanguageCode = useCurrentLanguage()
+  const availableLanguages = useAvailableLanguages()
 
-const fetchLanguages = async (): Promise<Language[]> => {
-  const response = await fetch('/api/languages')
-  if (!response.ok) {
-    throw new Error('Failed to fetch languages')
-  }
-  const data: LanguagesApiResponse = await response.json()
-  return data.languages
-}
-
-export function LanguageDropdown({}: LanguageDropdownProps) {
-  const { selectedLanguageCode, setSelectedLanguageCode } = useLanguage()
-  const { data: languages, isLoading, error } = useQuery({
+  const { data: languages, isLoading } = useQuery({
     queryKey: ['languages'],
     queryFn: fetchLanguages,
   })
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        Loading languages...
-      </div>
-    )
+  // Update available languages when data is fetched
+  if (languages && languages.length > 0 && availableLanguages.length === 0) {
+    setAvailableLanguages(languages)
   }
 
-  if (error) {
+  // Find current language object
+  const currentLanguage = availableLanguages.find((lang: Language) => lang.iso_code === currentLanguageCode)
+
+  const handleLanguageChange = (languageCode: string) => {
+    setCurrentLanguage(languageCode)
+    setIsOpen(false)
+  }
+
+  if (isLoading) {
     return (
-      <div className="flex items-center gap-2 text-sm text-red-500">
-        Failed to load languages
+      <div className="relative">
+        <div className="flex items-center space-x-2 px-3 py-2 bg-gray-100 rounded-lg animate-pulse">
+          <div className="w-16 h-4 bg-gray-300 rounded"></div>
+        </div>
       </div>
     )
   }
 
   // Sort languages alphabetically by name
-  const sortedLanguages = languages?.slice().sort((a, b) => 
-    a.name.localeCompare(b.name)
-  )
-
-  const selectedLanguage = sortedLanguages?.find(l => l.iso_code === selectedLanguageCode)
+  const sortedLanguages = [...availableLanguages].sort((a: Language, b: Language) => a.name.localeCompare(b.name))
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm font-medium text-primary-700">Language:</span>
-      <Select value={selectedLanguageCode} onValueChange={setSelectedLanguageCode}>
-        <SelectTrigger className="w-[200px]">
-          <SelectValue>
-            {selectedLanguage && (
-              <div className="flex items-center gap-2">
-                <span>🌐</span>
-                <span>{selectedLanguage.native_name || selectedLanguage.name}</span>
-                <span className="text-xs text-muted-foreground">({selectedLanguage.iso_code.toUpperCase()})</span>
+    <div className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center space-x-2 px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      >
+        <span className="text-sm font-medium text-gray-700">
+          {currentLanguage?.name || 'English'}
+        </span>
+        <svg 
+          className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div className="absolute top-full left-0 mt-1 w-64 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
+          {sortedLanguages.map((language: Language) => (
+            <button
+              key={language.id}
+              onClick={() => handleLanguageChange(language.iso_code)}
+              className={`w-full text-left px-4 py-2 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 ${
+                currentLanguageCode === language.iso_code ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+              }`}
+            >
+              <div className="flex justify-between items-center">
+                <span className="font-medium">{language.name}</span>
+                <span className="text-sm text-gray-500">{language.native_name}</span>
               </div>
-            )}
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          {sortedLanguages?.map((language) => (
-            <SelectItem key={language.id} value={language.iso_code}>
-              <div className="flex items-center gap-2">
-                <span>🌐</span>
-                <span>{language.native_name || language.name}</span>
-                <span className="text-xs text-muted-foreground">({language.iso_code.toUpperCase()})</span>
-              </div>
-            </SelectItem>
+            </button>
           ))}
-        </SelectContent>
-      </Select>
+        </div>
+      )}
     </div>
   )
 }
