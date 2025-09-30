@@ -20,6 +20,23 @@ export interface SurahResponse {
   chapters: Chapter[]
 }
 
+// Recitation API interfaces
+export interface RecitationTranslatedName {
+  name: string
+  language_name: string
+}
+
+export interface Recitation {
+  id: number
+  reciter_name: string
+  style: string | null
+  translated_name: RecitationTranslatedName
+}
+
+export interface RecitationsResponse {
+  recitations: Recitation[]
+}
+
 // Verses API interfaces - Updated to match actual API response
 export interface Verse {
   id: number

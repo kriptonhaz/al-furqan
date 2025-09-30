@@ -20,6 +20,7 @@ import { Route as DemoMcpTodosRouteImport } from './routes/demo.mcp-todos'
 import { Route as ApiTranslationsRouteImport } from './routes/api.translations'
 import { Route as ApiSurahRouteImport } from './routes/api.surah'
 import { Route as ApiSseRouteImport } from './routes/api.sse'
+import { Route as ApiRecitationsRouteImport } from './routes/api.recitations'
 import { Route as ApiMessagesRouteImport } from './routes/api.messages'
 import { Route as ApiMcpTodosRouteImport } from './routes/api.mcp-todos'
 import { Route as ApiDemoTqTodosRouteImport } from './routes/api.demo-tq-todos'
@@ -87,6 +88,11 @@ const ApiSseRoute = ApiSseRouteImport.update({
   path: '/api/sse',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiRecitationsRoute = ApiRecitationsRouteImport.update({
+  id: '/api/recitations',
+  path: '/api/recitations',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiMessagesRoute = ApiMessagesRouteImport.update({
   id: '/api/messages',
   path: '/api/messages',
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/api/demo-tq-todos': typeof ApiDemoTqTodosRoute
   '/api/mcp-todos': typeof ApiMcpTodosRoute
   '/api/messages': typeof ApiMessagesRoute
+  '/api/recitations': typeof ApiRecitationsRoute
   '/api/sse': typeof ApiSseRoute
   '/api/surah': typeof ApiSurahRoute
   '/api/translations': typeof ApiTranslationsRoute
@@ -175,6 +182,7 @@ export interface FileRoutesByTo {
   '/api/demo-tq-todos': typeof ApiDemoTqTodosRoute
   '/api/mcp-todos': typeof ApiMcpTodosRoute
   '/api/messages': typeof ApiMessagesRoute
+  '/api/recitations': typeof ApiRecitationsRoute
   '/api/sse': typeof ApiSseRoute
   '/api/surah': typeof ApiSurahRoute
   '/api/translations': typeof ApiTranslationsRoute
@@ -200,6 +208,7 @@ export interface FileRoutesById {
   '/api/demo-tq-todos': typeof ApiDemoTqTodosRoute
   '/api/mcp-todos': typeof ApiMcpTodosRoute
   '/api/messages': typeof ApiMessagesRoute
+  '/api/recitations': typeof ApiRecitationsRoute
   '/api/sse': typeof ApiSseRoute
   '/api/surah': typeof ApiSurahRoute
   '/api/translations': typeof ApiTranslationsRoute
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | '/api/demo-tq-todos'
     | '/api/mcp-todos'
     | '/api/messages'
+    | '/api/recitations'
     | '/api/sse'
     | '/api/surah'
     | '/api/translations'
@@ -250,6 +260,7 @@ export interface FileRouteTypes {
     | '/api/demo-tq-todos'
     | '/api/mcp-todos'
     | '/api/messages'
+    | '/api/recitations'
     | '/api/sse'
     | '/api/surah'
     | '/api/translations'
@@ -274,6 +285,7 @@ export interface FileRouteTypes {
     | '/api/demo-tq-todos'
     | '/api/mcp-todos'
     | '/api/messages'
+    | '/api/recitations'
     | '/api/sse'
     | '/api/surah'
     | '/api/translations'
@@ -299,6 +311,7 @@ export interface RootRouteChildren {
   ApiDemoTqTodosRoute: typeof ApiDemoTqTodosRoute
   ApiMcpTodosRoute: typeof ApiMcpTodosRoute
   ApiMessagesRoute: typeof ApiMessagesRoute
+  ApiRecitationsRoute: typeof ApiRecitationsRoute
   ApiSseRoute: typeof ApiSseRoute
   ApiSurahRoute: typeof ApiSurahRoute
   ApiTranslationsRoute: typeof ApiTranslationsRoute
@@ -395,6 +408,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSseRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/recitations': {
+      id: '/api/recitations'
+      path: '/api/recitations'
+      fullPath: '/api/recitations'
+      preLoaderRoute: typeof ApiRecitationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/messages': {
       id: '/api/messages'
       path: '/api/messages'
@@ -483,6 +503,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiDemoTqTodosRoute: ApiDemoTqTodosRoute,
   ApiMcpTodosRoute: ApiMcpTodosRoute,
   ApiMessagesRoute: ApiMessagesRoute,
+  ApiRecitationsRoute: ApiRecitationsRoute,
   ApiSseRoute: ApiSseRoute,
   ApiSurahRoute: ApiSurahRoute,
   ApiTranslationsRoute: ApiTranslationsRoute,

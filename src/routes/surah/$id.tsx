@@ -8,10 +8,11 @@ import {
   CardTitle,
 } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import type { Chapter, Verse } from '../../types/surah'
 import { VerseNumber } from '../../components/VerseNumber'
 import { TranslationsDropdown } from '../../components/TranslationsDropdown'
+import { RecitationDropdown } from '../../components/RecitationDropdown'
 import { ScrollToTopButton } from '../../components/ScrollToTopButton'
 import { useTranslation } from '../../contexts/TranslationContext'
 import { FootnoteText } from '../../components/FootnoteText'
@@ -73,9 +74,28 @@ const fetchVersesByChapter = async (
   }
 }
 
+// Fetch Bismillah verse from Surah 1 verse 1
+const fetchBismillahVerse = async (translationId: string): Promise<Verse | null> => {
+  try {
+    const response = await fetch(
+      `/api/verses/1?page=1&per_page=1&translation_id=${translationId}`,
+    )
+    const data = await response.json()
+
+    if (data.success && data.data && data.data.verses.length > 0) {
+      return data.data.verses[0] // Return the first verse (Bismillah)
+    }
+    return null
+  } catch (error) {
+    console.error('Error fetching Bismillah verse:', error)
+    return null
+  }
+}
+
 function SurahDetail() {
   const { id } = Route.useParams()
   const { selectedTranslationId } = useTranslation()
+  const [selectedRecitationId, setSelectedRecitationId] = useState('2') // Default to AbdulBaset AbdulSamad Murattal
 
   // Scroll to top when surah changes
   useEffect(() => {
@@ -90,6 +110,17 @@ function SurahDetail() {
   } = useQuery({
     queryKey: ['chapter', id],
     queryFn: () => fetchChapterById(id),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  })
+
+  // Fetch Bismillah verse for non-Fatihah and non-Tawbah surahs
+  const {
+    data: bismillahVerse,
+  } = useQuery({
+    queryKey: ['bismillah', selectedTranslationId],
+    queryFn: () => fetchBismillahVerse(selectedTranslationId),
+    enabled: !!(chapter && chapter.id !== 1 && chapter.id !== 9), // Only fetch for surahs that need Bismillah
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   })
@@ -241,9 +272,13 @@ function SurahDetail() {
               </span>
             </CardDescription>
 
-            {/* Translations Dropdown */}
-            <div className="mb-6 flex justify-center">
+            {/* Translations and Recitation Dropdowns */}
+            <div className="mb-6 flex flex-col sm:flex-row justify-center gap-4">
               <TranslationsDropdown />
+              <RecitationDropdown 
+                selectedRecitationId={selectedRecitationId}
+                onRecitationChange={setSelectedRecitationId}
+              />
             </div>
 
             <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
@@ -276,18 +311,20 @@ function SurahDetail() {
           </CardHeader>
         </Card>
 
-        {/* Bismillah (except for At-Tawbah and Al-Fatihah since it's included as verse 1) */}
-        {chapter.id !== 9 && chapter.id !== 1 && (
+        {/* Dynamic Bismillah (except for At-Tawbah and Al-Fatihah since it's included as verse 1) */}
+        {chapter.id !== 9 && chapter.id !== 1 && bismillahVerse && (
           <Card className="mb-8 bg-gradient-to-r from-primary-50 to-secondary-50 border-primary-200">
             <CardContent className="py-8">
               <div className="text-center">
-                <p className="text-3xl font-arabic text-primary-700 mb-3">
-                  بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-                </p>
-                <p className="text-lg text-primary-600 font-medium">
-                  In the name of Allah, the Entirely Merciful, the Especially
-                  Merciful
-                </p>
+                <div className="flex items-center justify-center gap-4 mb-4">
+                  <p className="text-3xl font-arabic text-primary-700">
+                    {bismillahVerse.text_uthmani}
+                  </p>
+                  <VersePlayButton verse={bismillahVerse} />
+                </div>
+                <div className="text-lg text-primary-600 font-medium">
+                  <FootnoteText text={bismillahVerse.translations[0]?.text || ''} />
+                </div>
               </div>
             </CardContent>
           </Card>
