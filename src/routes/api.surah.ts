@@ -6,25 +6,33 @@ import tokenManager from '../utils/tokenManager'
 export const Route = createFileRoute('/api/surah')({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
         try {
+          const url = new URL(request.url)
+          const language = url.searchParams.get('language') || 'en'
+          
+          console.log('Fetching surahs with language:', language)
+          
           const contentApiUrl = process.env.QURAN_CONTENT_API_BASE_URL
-
           if (!contentApiUrl) {
-            throw new Error('Missing QURAN_CONTENT_API_BASE_URL environment variable')
-          }
+              throw new Error('QURAN_CONTENT_API_BASE_URL environment variable is not set')
+            }
 
-          // Get token from the global token manager
           const accessToken = await tokenManager.getToken()
           const clientId = tokenManager.getClientId()
 
-          // Now fetch the Surah list using the access token
-          console.log('Fetching Surah list...')
+          if (!accessToken || !clientId) {
+            throw new Error('Failed to get authentication tokens')
+          }
+
           const surahResponse = await ky
             .get(`${contentApiUrl}/content/api/v4/chapters`, {
               headers: {
                 'x-auth-token': accessToken,
                 'x-client-id': clientId,
+              },
+              searchParams: {
+                language: language,
               },
             })
             .json<SurahResponse>()

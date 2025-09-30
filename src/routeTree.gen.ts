@@ -23,6 +23,7 @@ import { Route as ApiSseRouteImport } from './routes/api.sse'
 import { Route as ApiRecitationsRouteImport } from './routes/api.recitations'
 import { Route as ApiMessagesRouteImport } from './routes/api.messages'
 import { Route as ApiMcpTodosRouteImport } from './routes/api.mcp-todos'
+import { Route as ApiLanguagesRouteImport } from './routes/api.languages'
 import { Route as ApiDemoTqTodosRouteImport } from './routes/api.demo-tq-todos'
 import { Route as ApiDemoNamesRouteImport } from './routes/api.demo-names'
 import { Route as ApiDemoChatRouteImport } from './routes/api.demo-chat'
@@ -103,6 +104,11 @@ const ApiMcpTodosRoute = ApiMcpTodosRouteImport.update({
   path: '/api/mcp-todos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiLanguagesRoute = ApiLanguagesRouteImport.update({
+  id: '/api/languages',
+  path: '/api/languages',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiDemoTqTodosRoute = ApiDemoTqTodosRouteImport.update({
   id: '/api/demo-tq-todos',
   path: '/api/demo-tq-todos',
@@ -155,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/api/demo-chat': typeof ApiDemoChatRoute
   '/api/demo-names': typeof ApiDemoNamesRoute
   '/api/demo-tq-todos': typeof ApiDemoTqTodosRoute
+  '/api/languages': typeof ApiLanguagesRoute
   '/api/mcp-todos': typeof ApiMcpTodosRoute
   '/api/messages': typeof ApiMessagesRoute
   '/api/recitations': typeof ApiRecitationsRoute
@@ -180,6 +187,7 @@ export interface FileRoutesByTo {
   '/api/demo-chat': typeof ApiDemoChatRoute
   '/api/demo-names': typeof ApiDemoNamesRoute
   '/api/demo-tq-todos': typeof ApiDemoTqTodosRoute
+  '/api/languages': typeof ApiLanguagesRoute
   '/api/mcp-todos': typeof ApiMcpTodosRoute
   '/api/messages': typeof ApiMessagesRoute
   '/api/recitations': typeof ApiRecitationsRoute
@@ -206,6 +214,7 @@ export interface FileRoutesById {
   '/api/demo-chat': typeof ApiDemoChatRoute
   '/api/demo-names': typeof ApiDemoNamesRoute
   '/api/demo-tq-todos': typeof ApiDemoTqTodosRoute
+  '/api/languages': typeof ApiLanguagesRoute
   '/api/mcp-todos': typeof ApiMcpTodosRoute
   '/api/messages': typeof ApiMessagesRoute
   '/api/recitations': typeof ApiRecitationsRoute
@@ -233,6 +242,7 @@ export interface FileRouteTypes {
     | '/api/demo-chat'
     | '/api/demo-names'
     | '/api/demo-tq-todos'
+    | '/api/languages'
     | '/api/mcp-todos'
     | '/api/messages'
     | '/api/recitations'
@@ -258,6 +268,7 @@ export interface FileRouteTypes {
     | '/api/demo-chat'
     | '/api/demo-names'
     | '/api/demo-tq-todos'
+    | '/api/languages'
     | '/api/mcp-todos'
     | '/api/messages'
     | '/api/recitations'
@@ -283,6 +294,7 @@ export interface FileRouteTypes {
     | '/api/demo-chat'
     | '/api/demo-names'
     | '/api/demo-tq-todos'
+    | '/api/languages'
     | '/api/mcp-todos'
     | '/api/messages'
     | '/api/recitations'
@@ -309,6 +321,7 @@ export interface RootRouteChildren {
   ApiDemoChatRoute: typeof ApiDemoChatRoute
   ApiDemoNamesRoute: typeof ApiDemoNamesRoute
   ApiDemoTqTodosRoute: typeof ApiDemoTqTodosRoute
+  ApiLanguagesRoute: typeof ApiLanguagesRoute
   ApiMcpTodosRoute: typeof ApiMcpTodosRoute
   ApiMessagesRoute: typeof ApiMessagesRoute
   ApiRecitationsRoute: typeof ApiRecitationsRoute
@@ -429,6 +442,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMcpTodosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/languages': {
+      id: '/api/languages'
+      path: '/api/languages'
+      fullPath: '/api/languages'
+      preLoaderRoute: typeof ApiLanguagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/demo-tq-todos': {
       id: '/api/demo-tq-todos'
       path: '/api/demo-tq-todos'
@@ -501,6 +521,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiDemoChatRoute: ApiDemoChatRoute,
   ApiDemoNamesRoute: ApiDemoNamesRoute,
   ApiDemoTqTodosRoute: ApiDemoTqTodosRoute,
+  ApiLanguagesRoute: ApiLanguagesRoute,
   ApiMcpTodosRoute: ApiMcpTodosRoute,
   ApiMessagesRoute: ApiMessagesRoute,
   ApiRecitationsRoute: ApiRecitationsRoute,

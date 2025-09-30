@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import type { Chapter, Verse } from '../../types/surah'
 import { VerseNumber } from '../../components/VerseNumber'
 import { TranslationsDropdown } from '../../components/TranslationsDropdown'
@@ -105,11 +105,23 @@ function SurahDetail() {
   const { id } = Route.useParams()
   const { selectedTranslationId } = useTranslation()
   const { selectedRecitationId } = useRecitation()
+  const [isHeaderSticky, setIsHeaderSticky] = useState(false)
 
   // Scroll to top when surah changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [id])
+
+  // Handle scroll for sticky header
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY
+      setIsHeaderSticky(scrollY > 200) // Show sticky header after scrolling 200px
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   // Fetch chapter info with TanStack Query
   const {
@@ -252,6 +264,39 @@ function SurahDetail() {
           : verses
       }>
         <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50">
+          {/* Sticky Header */}
+          <div className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-primary-200 transition-all duration-300 ${
+            isHeaderSticky ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+          }`}>
+            <div className="container mx-auto px-4 py-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/surah">← Back</Link>
+                  </Button>
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/">🏠 Home</Link>
+                  </Button>
+                </div>
+                {chapter && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                      {chapter.id}
+                    </div>
+                    <div className="text-right">
+                      <h2 className="text-lg font-semibold text-primary-800">
+                        {chapter.name_simple}
+                      </h2>
+                      <p className="text-sm font-arabic text-primary-600">
+                        {chapter.name_arabic}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
           <div className="container mx-auto px-4 py-8">
         {/* Navigation */}
         <div className="flex items-center gap-4 mb-8">

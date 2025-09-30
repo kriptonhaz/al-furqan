@@ -16,6 +16,7 @@ import type { QueryClient } from '@tanstack/react-query'
 import { TranslationProvider } from '../contexts/TranslationContext'
 import { RecitationProvider } from '../contexts/RecitationContext'
 import { AudioProvider } from '../contexts/AudioContext'
+import { LanguageProvider } from '../contexts/LanguageContext'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -53,14 +54,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {/* <Header /> */}
-        <TranslationProvider>
-          <RecitationProvider>
-            <AudioProvider>
-              {children}
-            </AudioProvider>
-          </RecitationProvider>
-        </TranslationProvider>
+        <LanguageProvider>
+          <TranslationProvider>
+            <RecitationProvider>
+              <AudioProvider>{children}</AudioProvider>
+            </RecitationProvider>
+          </TranslationProvider>
+        </LanguageProvider>
         <TanstackDevtools
           config={{
             position: 'bottom-left',
