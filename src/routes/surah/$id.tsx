@@ -15,6 +15,10 @@ import { TranslationsDropdown } from '../../components/TranslationsDropdown'
 import { ScrollToTopButton } from '../../components/ScrollToTopButton'
 import { useTranslation } from '../../contexts/TranslationContext'
 import { FootnoteText } from '../../components/FootnoteText'
+import { AudioProvider } from '../../contexts/AudioContext'
+import { MiniPlayer } from '../../components/MiniPlayer'
+import { VersePlayButton } from '../../components/VersePlayButton'
+import { SurahDetailWithAudio } from '../../components/SurahDetailWithAudio'
 
 export const Route = createFileRoute('/surah/$id')({
   component: SurahDetail,
@@ -200,8 +204,10 @@ function SurahDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50">
-      <div className="container mx-auto px-4 py-8">
+    <AudioProvider>
+      <SurahDetailWithAudio verses={verses}>
+        <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50">
+          <div className="container mx-auto px-4 py-8">
         {/* Navigation */}
         <div className="flex items-center gap-4 mb-8">
           <Button asChild variant="outline">
@@ -293,6 +299,7 @@ function SurahDetail() {
             verses.map((verse: Verse) => (
               <Card
                 key={verse.id}
+                id={`verse-${verse.id}`}
                 className="hover:shadow-md transition-shadow border-primary-100"
               >
                 <CardContent className="py-6">
@@ -325,6 +332,11 @@ function SurahDetail() {
                           ))}
                         </div>
                       )}
+                    </div>
+                    
+                    {/* Play Button */}
+                    <div className="flex-shrink-0 mt-2">
+                      <VersePlayButton verse={verse} />
                     </div>
                   </div>
                 </CardContent>
@@ -409,10 +421,15 @@ function SurahDetail() {
             </Link>
           </Button>
         </div>
-      </div>
+        </div>
+        </div>
       
       {/* Scroll to Top Button */}
       <ScrollToTopButton />
-    </div>
+      
+      {/* Mini Player */}
+      <MiniPlayer />
+      </SurahDetailWithAudio>
+    </AudioProvider>
   )
 }

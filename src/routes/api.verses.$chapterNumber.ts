@@ -9,7 +9,7 @@ export const Route = createFileRoute('/api/verses/$chapterNumber')({
       GET: async ({ params, request }) => {
         try {
           const chapterNumber = params.chapterNumber
-          
+
           // Parse query parameters from the request URL
           const url = new URL(request.url)
           const page = url.searchParams.get('page') || '1'
@@ -51,8 +51,9 @@ export const Route = createFileRoute('/api/verses/$chapterNumber')({
                   'x-client-id': clientId,
                 },
                 searchParams: {
-                  fields: 'text_uthmani,translations',
+                  fields: 'text_uthmani,translations,audio_files',
                   translations: translationId,
+                  audio: 7,
                   page: page,
                   per_page: perPage,
                 },

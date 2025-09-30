@@ -33,6 +33,10 @@ export interface Verse {
   page_number: number
   juz_number: number
   text_uthmani: string
+  audio?: {
+    url: string
+    segments: number[][]
+  }
   translations: {
     id: number
     resource_id: number

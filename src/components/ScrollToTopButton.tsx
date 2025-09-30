@@ -37,7 +37,7 @@ export function ScrollToTopButton({ className = '' }: ScrollToTopButtonProps) {
       {isVisible && (
         <Button
           onClick={scrollToTop}
-          className={`fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full shadow-lg bg-primary-600 hover:bg-primary-700 text-black transition-all duration-300 ease-in-out transform hover:scale-110 ${className}`}
+          className={`fixed bottom-8 right-8 z-[60] w-12 h-12 rounded-full shadow-lg bg-primary-600 hover:bg-primary-700 text-black transition-all duration-300 ease-in-out transform hover:scale-110 ${className}`}
           size="sm"
           aria-label="Scroll to top"
         >
