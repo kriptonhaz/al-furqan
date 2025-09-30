@@ -7,10 +7,10 @@ import {
   SelectValue,
 } from './ui/select'
 import type { Translation, TranslationsResponse } from '../types/translation'
+import { useTranslation } from '../contexts/TranslationContext'
 
 interface TranslationsDropdownProps {
-  value: string
-  onValueChange: (value: string) => void
+  // Remove the props since we'll use global state
 }
 
 const fetchTranslations = async (): Promise<Translation[]> => {
@@ -154,7 +154,140 @@ const getLanguageFlag = (languageName: string): string => {
   return flags[languageName.toLowerCase()] || '🌐'
 }
 
-export function TranslationsDropdown({ value, onValueChange }: TranslationsDropdownProps) {
+const getLanguageCode = (languageName: string): string => {
+  const codes: Record<string, string> = {
+    english: 'EN',
+    spanish: 'ES',
+    french: 'FR',
+    german: 'DE',
+    italian: 'IT',
+    portuguese: 'PT',
+    russian: 'RU',
+    chinese: 'ZH',
+    japanese: 'JA',
+    korean: 'KO',
+    arabic: 'AR',
+    turkish: 'TR',
+    urdu: 'UR',
+    hindi: 'HI',
+    bengali: 'BN',
+    indonesian: 'ID',
+    malay: 'MS',
+    persian: 'FA',
+    dutch: 'NL',
+    swedish: 'SV',
+    norwegian: 'NO',
+    danish: 'DA',
+    finnish: 'FI',
+    polish: 'PL',
+    czech: 'CS',
+    hungarian: 'HU',
+    romanian: 'RO',
+    bulgarian: 'BG',
+    greek: 'EL',
+    hebrew: 'HE',
+    thai: 'TH',
+    vietnamese: 'VI',
+    ukrainian: 'UK',
+    albanian: 'SQ',
+    bosnian: 'BS',
+    croatian: 'HR',
+    serbian: 'SR',
+    slovenian: 'SL',
+    slovak: 'SK',
+    lithuanian: 'LT',
+    latvian: 'LV',
+    estonian: 'ET',
+    maltese: 'MT',
+    irish: 'GA',
+    welsh: 'CY',
+    scottish: 'GD',
+    catalan: 'CA',
+    basque: 'EU',
+    galician: 'GL',
+    swahili: 'SW',
+    hausa: 'HA',
+    yoruba: 'YO',
+    igbo: 'IG',
+    amharic: 'AM',
+    somali: 'SO',
+    oromo: 'OM',
+    tigrinya: 'TI',
+    afrikaans: 'AF',
+    zulu: 'ZU',
+    xhosa: 'XH',
+    sotho: 'ST',
+    tswana: 'TN',
+    shona: 'SN',
+    ndebele: 'ND',
+    chichewa: 'NY',
+    bemba: 'BEM',
+    luo: 'LUO',
+    kikuyu: 'KI',
+    kamba: 'KAM',
+    meru: 'MER',
+    embu: 'EMB',
+    taita: 'TAI',
+    pokomo: 'POK',
+    turkana: 'TUK',
+    maasai: 'MAS',
+    samburu: 'SAQ',
+    rendille: 'REL',
+    borana: 'BOR',
+    gabra: 'GAB',
+    burji: 'BUR',
+    konso: 'KON',
+    gedeo: 'GED',
+    sidamo: 'SID',
+    wolayta: 'WOL',
+    gamo: 'GAM',
+    gofa: 'GOF',
+    dawro: 'DAW',
+    kafa: 'KAF',
+    bench: 'BEN',
+    sheko: 'SHE',
+    dizi: 'DIZ',
+    surma: 'SUR',
+    mursi: 'MUR',
+    hamer: 'HAM',
+    banna: 'BAN',
+    karo: 'KAR',
+    kwegu: 'KWE',
+    nyangatom: 'NYA',
+    daasanach: 'DAA',
+    arbore: 'ARB',
+    tsamai: 'TSA',
+    ari: 'ARI',
+    bodi: 'BOD',
+    murle: 'MUR',
+    toposa: 'TOP',
+    jie: 'JIE',
+    karamojong: 'KAR',
+    pokot: 'POK',
+    sebei: 'SEB',
+    sabaot: 'SAB',
+    nandi: 'NAN',
+    kipsigis: 'KIP',
+    tugen: 'TUG',
+    marakwet: 'MAR',
+    endorois: 'END',
+    ogiek: 'OGI',
+    sengwer: 'SEN',
+    cherangany: 'CHE',
+    book: 'BOO',
+    terik: 'TER',
+    keiyo: 'KEI',
+    elgeyo: 'ELG',
+    pok: 'POK',
+    endo: 'END',
+    chepchabas: 'CHE',
+  }
+  
+  return codes[languageName.toLowerCase()] || languageName.substring(0, 2).toUpperCase()
+}
+
+export function TranslationsDropdown({}: TranslationsDropdownProps) {
+  const { selectedTranslationId, setSelectedTranslationId } = useTranslation()
   const { data: translations, isLoading, error } = useQuery({
     queryKey: ['translations'],
     queryFn: fetchTranslations,
@@ -176,27 +309,34 @@ export function TranslationsDropdown({ value, onValueChange }: TranslationsDropd
     )
   }
 
-  const selectedTranslation = translations?.find(t => t.id.toString() === value)
+  // Sort translations alphabetically by language name
+  const sortedTranslations = translations?.slice().sort((a, b) => 
+    a.language_name.localeCompare(b.language_name)
+  )
+
+  const selectedTranslation = sortedTranslations?.find(t => t.id.toString() === selectedTranslationId)
 
   return (
     <div className="flex items-center gap-2">
       <span className="text-sm font-medium text-primary-700">Translation:</span>
-      <Select value={value} onValueChange={onValueChange}>
+      <Select value={selectedTranslationId} onValueChange={setSelectedTranslationId}>
         <SelectTrigger className="w-[280px]">
           <SelectValue>
             {selectedTranslation && (
               <div className="flex items-center gap-2">
                 <span>{getLanguageFlag(selectedTranslation.language_name)}</span>
+                <span>({getLanguageCode(selectedTranslation.language_name)})</span>
                 <span>{selectedTranslation.translated_name.name}</span>
               </div>
             )}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {translations?.map((translation) => (
+          {sortedTranslations?.map((translation) => (
             <SelectItem key={translation.id} value={translation.id.toString()}>
               <div className="flex items-center gap-2">
                 <span>{getLanguageFlag(translation.language_name)}</span>
+                <span>({getLanguageCode(translation.language_name)})</span>
                 <span>{translation.translated_name.name}</span>
               </div>
             </SelectItem>

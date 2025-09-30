@@ -13,6 +13,7 @@ import StoreDevtools from '../lib/demo-store-devtools'
 import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
+import { TranslationProvider } from '../contexts/TranslationContext'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -51,7 +52,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {/* <Header /> */}
-        {children}
+        <TranslationProvider>
+          {children}
+        </TranslationProvider>
         <TanstackDevtools
           config={{
             position: 'bottom-left',

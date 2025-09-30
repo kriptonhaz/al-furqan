@@ -8,11 +8,12 @@ import {
   CardTitle,
 } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
-import { useEffect, useCallback, useState } from 'react'
+import { useEffect, useCallback } from 'react'
 import type { Chapter, Verse } from '../../types/surah'
 import { VerseNumber } from '../../components/VerseNumber'
 import { TranslationsDropdown } from '../../components/TranslationsDropdown'
 import { ScrollToTopButton } from '../../components/ScrollToTopButton'
+import { useTranslation } from '../../contexts/TranslationContext'
 
 export const Route = createFileRoute('/surah/$id')({
   component: SurahDetail,
@@ -38,12 +39,13 @@ const fetchChapterById = async (id: string): Promise<Chapter | null> => {
 // Fetch verses for a specific chapter with pagination
 const fetchVersesByChapter = async (
   chapterNumber: string,
+  translationId: string,
   page: number = 1,
   perPage: number = 50,
 ): Promise<{ verses: Verse[]; hasMore: boolean; totalVerses: number }> => {
   try {
     const response = await fetch(
-      `/api/verses/${chapterNumber}?page=${page}&per_page=${perPage}`,
+      `/api/verses/${chapterNumber}?page=${page}&per_page=${perPage}&translation_id=${translationId}`,
     )
     const data = await response.json()
 
@@ -68,9 +70,7 @@ const fetchVersesByChapter = async (
 
 function SurahDetail() {
   const { id } = Route.useParams()
-  
-  // Translation state with default value of 85
-  const [selectedTranslation, setSelectedTranslation] = useState('85')
+  const { selectedTranslationId } = useTranslation()
 
   // Scroll to top when surah changes
   useEffect(() => {
@@ -98,8 +98,8 @@ function SurahDetail() {
     isLoading: versesLoading,
     error: versesError,
   } = useInfiniteQuery({
-    queryKey: ['verses', id],
-    queryFn: ({ pageParam = 1 }) => fetchVersesByChapter(id, pageParam, 50),
+    queryKey: ['verses', id, selectedTranslationId],
+    queryFn: ({ pageParam = 1 }) => fetchVersesByChapter(id, selectedTranslationId, pageParam, 50),
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.hasMore ? allPages.length + 1 : undefined
     },
@@ -236,10 +236,7 @@ function SurahDetail() {
 
             {/* Translations Dropdown */}
             <div className="mb-6 flex justify-center">
-              <TranslationsDropdown 
-                value={selectedTranslation} 
-                onValueChange={setSelectedTranslation} 
-              />
+              <TranslationsDropdown />
             </div>
 
             <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
