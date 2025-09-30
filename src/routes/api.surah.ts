@@ -11,8 +11,6 @@ export const Route = createFileRoute('/api/surah')({
           const url = new URL(request.url)
           const language = url.searchParams.get('language') || 'en'
           
-          console.log('Fetching surahs with language:', language)
-          
           const contentApiUrl = process.env.QURAN_CONTENT_API_BASE_URL
           if (!contentApiUrl) {
               throw new Error('QURAN_CONTENT_API_BASE_URL environment variable is not set')
@@ -36,13 +34,6 @@ export const Route = createFileRoute('/api/surah')({
               },
             })
             .json<SurahResponse>()
-
-          console.log(
-            'Surah list received:',
-            surahResponse.chapters
-              ? `${surahResponse.chapters.length} surahs`
-              : 'no data',
-          )
 
           return new Response(
             JSON.stringify({

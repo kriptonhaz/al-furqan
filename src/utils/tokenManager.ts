@@ -40,8 +40,6 @@ class TokenManager {
     if (!clientId || !clientSecret || !baseUrl) {
       throw new Error('Missing required environment variables for OAuth2')
     }
-
-    console.log('Fetching new OAuth2 token...')
     
     // Use the same method as the working Surah API
     const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
@@ -73,7 +71,6 @@ class TokenManager {
     }
 
     this.tokenData = tokenData
-    console.log('New OAuth2 token obtained, expires at:', new Date(expires_at).toISOString())
     
     return tokenData
   }
@@ -81,13 +78,11 @@ class TokenManager {
   async getToken(): Promise<string> {
     // If we have a valid token, return it
     if (this.isTokenValid() && this.tokenData) {
-      console.log('Using cached OAuth2 token')
       return this.tokenData.access_token
     }
 
     // If we're already fetching a token, wait for that promise
     if (this.tokenPromise) {
-      console.log('Waiting for ongoing token request...')
       const tokenData = await this.tokenPromise
       return tokenData.access_token
     }
@@ -117,7 +112,6 @@ class TokenManager {
   clearToken(): void {
     this.tokenData = null
     this.tokenPromise = null
-    console.log('Token cache cleared')
   }
 }
 

@@ -21,7 +21,6 @@ export const Route = createFileRoute('/api/recitations')({
           const clientId = tokenManager.getClientId()
 
           // Fetch the recitations list using the access token
-          console.log('Fetching recitations list...')
           const recitationsResponse = await ky
             .get(`${contentApiUrl}/content/api/v4/resources/recitations`, {
               headers: {
@@ -30,13 +29,6 @@ export const Route = createFileRoute('/api/recitations')({
               },
             })
             .json<RecitationsResponse>()
-
-          console.log(
-            'Recitations list received:',
-            recitationsResponse.recitations
-              ? `${recitationsResponse.recitations.length} recitations`
-              : 'no data',
-          )
 
           return new Response(
             JSON.stringify({

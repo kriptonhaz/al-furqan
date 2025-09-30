@@ -7,8 +7,6 @@ export const Route = createFileRoute('/api/languages')({
     handlers: {
       GET: async () => {
         try {
-          console.log('Fetching languages from external API...')
-          
           const contentApiUrl = process.env.QURAN_CONTENT_API_BASE_URL
 
           if (!contentApiUrl) {
@@ -30,8 +28,6 @@ export const Route = createFileRoute('/api/languages')({
               },
             })
             .json()
-          
-          console.log('Languages fetched successfully:', response)
           
           return new Response(JSON.stringify(response), {
             status: 200,

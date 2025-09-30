@@ -21,7 +21,6 @@ export const Route = createFileRoute('/api/verses/$chapterNumber')({
           const translationsParam = translationId.includes(',')
             ? translationId
             : translationId
-          console.log('translationsParam:', translationsParam)
 
           // Get environment variables
           const contentApiUrl = process.env.QURAN_CONTENT_API_BASE_URL
@@ -47,7 +46,6 @@ export const Route = createFileRoute('/api/verses/$chapterNumber')({
           const accessToken = await tokenManager.getToken()
           const clientId = tokenManager.getClientId()
 
-          console.log(`Fetching verses for chapter ${chapterNumber}...`)
           // Fetch verses using the access token
           const versesResponse = await ky
             .get(
@@ -67,13 +65,6 @@ export const Route = createFileRoute('/api/verses/$chapterNumber')({
               },
             )
             .json<VersesResponse>()
-
-          console.log(
-            'Verses received:',
-            versesResponse.verses
-              ? `${versesResponse.verses.length} verses`
-              : 'no data',
-          )
 
           return new Response(
             JSON.stringify({

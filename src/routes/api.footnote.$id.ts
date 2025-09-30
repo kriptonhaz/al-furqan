@@ -24,7 +24,6 @@ export const Route = createFileRoute('/api/footnote/$id')({
           const clientId = tokenManager.getClientId()
 
           // Fetch the footnote using the access token
-          console.log(`Fetching footnote ${footnoteId}...`)
           const footnoteResponse = await ky
             .get(`${contentApiUrl}/content/api/v4/foot_notes/${footnoteId}`, {
               headers: {
@@ -33,13 +32,6 @@ export const Route = createFileRoute('/api/footnote/$id')({
               },
             })
             .json<FootNoteResponse>()
-
-          console.log(
-            'Footnote received:',
-            footnoteResponse.foot_note
-              ? `ID: ${footnoteResponse.foot_note.id}`
-              : 'no data',
-          )
 
           return new Response(
             JSON.stringify({
