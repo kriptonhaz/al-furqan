@@ -4,6 +4,11 @@ Experience the Holy Quran with beautiful recitation, translations, and spiritual
 
 🌐 **Live Demo**: [https://al-furqan-web.netlify.app/](https://al-furqan-web.netlify.app/)
 
+
+https://github.com/user-attachments/assets/bf5da725-51f6-445f-a9d0-2d14b009791c
+
+
+
 ## ✨ Features
 
 ### Quran Experience
@@ -125,6 +130,11 @@ src/
 ├── utils/              # Utility functions
 └── styles.css          # Global styles
 ```
+
+## 🎯 Next Milestone
+- Add Tafsir
+- Add Bookmark
+- Add Gharib marker
 
 ## 🤝 Contributing
 
