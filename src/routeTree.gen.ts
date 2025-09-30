@@ -30,6 +30,7 @@ import { Route as ExampleGuitarsGuitarIdRouteImport } from './routes/example.gui
 import { Route as DemoStartServerFuncsRouteImport } from './routes/demo.start.server-funcs'
 import { Route as DemoStartApiRequestRouteImport } from './routes/demo.start.api-request'
 import { Route as ApiVersesChapterNumberRouteImport } from './routes/api.verses.$chapterNumber'
+import { Route as ApiFootnoteIdRouteImport } from './routes/api.footnote.$id'
 
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
@@ -136,6 +137,11 @@ const ApiVersesChapterNumberRoute = ApiVersesChapterNumberRouteImport.update({
   path: '/api/verses/$chapterNumber',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiFootnoteIdRoute = ApiFootnoteIdRouteImport.update({
+  id: '/api/footnote/$id',
+  path: '/api/footnote/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -154,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/example/chat': typeof ExampleChatRoute
   '/surah/$id': typeof SurahIdRoute
   '/surah': typeof SurahIndexRoute
+  '/api/footnote/$id': typeof ApiFootnoteIdRoute
   '/api/verses/$chapterNumber': typeof ApiVersesChapterNumberRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
@@ -177,6 +184,7 @@ export interface FileRoutesByTo {
   '/example/chat': typeof ExampleChatRoute
   '/surah/$id': typeof SurahIdRoute
   '/surah': typeof SurahIndexRoute
+  '/api/footnote/$id': typeof ApiFootnoteIdRoute
   '/api/verses/$chapterNumber': typeof ApiVersesChapterNumberRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
@@ -201,6 +209,7 @@ export interface FileRoutesById {
   '/example/chat': typeof ExampleChatRoute
   '/surah/$id': typeof SurahIdRoute
   '/surah/': typeof SurahIndexRoute
+  '/api/footnote/$id': typeof ApiFootnoteIdRoute
   '/api/verses/$chapterNumber': typeof ApiVersesChapterNumberRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | '/example/chat'
     | '/surah/$id'
     | '/surah'
+    | '/api/footnote/$id'
     | '/api/verses/$chapterNumber'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
@@ -249,6 +259,7 @@ export interface FileRouteTypes {
     | '/example/chat'
     | '/surah/$id'
     | '/surah'
+    | '/api/footnote/$id'
     | '/api/verses/$chapterNumber'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/example/chat'
     | '/surah/$id'
     | '/surah/'
+    | '/api/footnote/$id'
     | '/api/verses/$chapterNumber'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
@@ -296,6 +308,7 @@ export interface RootRouteChildren {
   ExampleChatRoute: typeof ExampleChatRoute
   SurahIdRoute: typeof SurahIdRoute
   SurahIndexRoute: typeof SurahIndexRoute
+  ApiFootnoteIdRoute: typeof ApiFootnoteIdRoute
   ApiVersesChapterNumberRoute: typeof ApiVersesChapterNumberRoute
   DemoStartApiRequestRoute: typeof DemoStartApiRequestRoute
   DemoStartServerFuncsRoute: typeof DemoStartServerFuncsRoute
@@ -452,6 +465,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiVersesChapterNumberRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/footnote/$id': {
+      id: '/api/footnote/$id'
+      path: '/api/footnote/$id'
+      fullPath: '/api/footnote/$id'
+      preLoaderRoute: typeof ApiFootnoteIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -472,6 +492,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExampleChatRoute: ExampleChatRoute,
   SurahIdRoute: SurahIdRoute,
   SurahIndexRoute: SurahIndexRoute,
+  ApiFootnoteIdRoute: ApiFootnoteIdRoute,
   ApiVersesChapterNumberRoute: ApiVersesChapterNumberRoute,
   DemoStartApiRequestRoute: DemoStartApiRequestRoute,
   DemoStartServerFuncsRoute: DemoStartServerFuncsRoute,

@@ -14,6 +14,7 @@ import { VerseNumber } from '../../components/VerseNumber'
 import { TranslationsDropdown } from '../../components/TranslationsDropdown'
 import { ScrollToTopButton } from '../../components/ScrollToTopButton'
 import { useTranslation } from '../../contexts/TranslationContext'
+import { FootnoteText } from '../../components/FootnoteText'
 
 export const Route = createFileRoute('/surah/$id')({
   component: SurahDetail,
@@ -316,9 +317,10 @@ function SurahDetail() {
                               key={translation.id}
                               className="bg-primary-50 p-4 rounded-lg border-l-4 border-primary-300"
                             >
-                              <p className="text-primary-700 leading-relaxed">
-                                {translation.text}
-                              </p>
+                              <FootnoteText 
+                                text={translation.text}
+                                className="text-primary-700"
+                              />
                             </div>
                           ))}
                         </div>

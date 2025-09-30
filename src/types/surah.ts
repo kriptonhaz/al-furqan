@@ -52,3 +52,14 @@ export interface VersesResponse {
   verses: Verse[]
   pagination: VersePagination
 }
+
+// Footnote API interfaces
+export interface FootNote {
+  id: number
+  text: string
+  language_name: string
+}
+
+export interface FootNoteResponse {
+  foot_note: FootNote
+}
