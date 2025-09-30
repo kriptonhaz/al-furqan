@@ -123,9 +123,17 @@ export function AudioProvider({ children }: { children: ReactNode }) {
         const currentIndex = verses.findIndex(
           (v) => v.verse_number === verse.verse_number,
         )
-        const nextIndex = currentIndex + 1
+        
+        // For Bismillah (verse 0), find the next verse with verse_number 1
+        // For other verses, find the next verse in sequence
+        let nextIndex = currentIndex + 1
+        
+        if (verse.verse_number === 0) {
+          // If current verse is Bismillah (verse 0), find verse 1
+          nextIndex = verses.findIndex(v => v.verse_number === 1)
+        }
 
-        if (nextIndex < verses.length) {
+        if (nextIndex >= 0 && nextIndex < verses.length) {
           const nextVerse = verses[nextIndex]
           if (nextVerse.audio?.url) {
             playVerse(nextVerse)
@@ -230,9 +238,17 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     const currentIndex = verses.findIndex(
       (v) => v.verse_number === audioState.currentVerse!.verse_number,
     )
-    const nextIndex = currentIndex + 1
+    
+    // For Bismillah (verse 0), find the next verse with verse_number 1
+    // For other verses, find the next verse in sequence
+    let nextIndex = currentIndex + 1
+    
+    if (audioState.currentVerse.verse_number === 0) {
+      // If current verse is Bismillah (verse 0), find verse 1
+      nextIndex = verses.findIndex(v => v.verse_number === 1)
+    }
 
-    if (nextIndex < verses.length) {
+    if (nextIndex >= 0 && nextIndex < verses.length) {
       const nextVerse = verses[nextIndex]
       if (nextVerse.audio?.url) {
         playVerse(nextVerse)

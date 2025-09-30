@@ -77,15 +77,22 @@ const fetchVersesByChapter = async (
 }
 
 // Fetch Bismillah verse from Surah 1 verse 1
-const fetchBismillahVerse = async (translationId: string): Promise<Verse | null> => {
+const fetchBismillahVerse = async (translationId: string, recitationId: string): Promise<Verse | null> => {
   try {
     const response = await fetch(
-      `/api/verses/1?page=1&per_page=1&translation_id=${translationId}`,
+      `/api/verses/1?page=1&per_page=1&translation_id=${translationId}&recitation_id=${recitationId}`,
     )
     const data = await response.json()
 
     if (data.success && data.data && data.data.verses.length > 0) {
-      return data.data.verses[0] // Return the first verse (Bismillah)
+      const bismillahVerse = data.data.verses[0] // Get the first verse (Bismillah)
+      
+      // For non-Surah 1, treat Bismillah as verse 0 to avoid conflicts with actual verse 1
+      return {
+        ...bismillahVerse,
+        verse_number: 0,
+        verse_key: `${bismillahVerse.verse_key.split(':')[0]}:0`, // Update verse_key to reflect verse 0
+      }
     }
     return null
   } catch (error) {
@@ -120,8 +127,8 @@ function SurahDetail() {
   const {
     data: bismillahVerse,
   } = useQuery({
-    queryKey: ['bismillah', selectedTranslationId],
-    queryFn: () => fetchBismillahVerse(selectedTranslationId),
+    queryKey: ['bismillah', selectedTranslationId, selectedRecitationId],
+    queryFn: () => fetchBismillahVerse(selectedTranslationId, selectedRecitationId),
     enabled: !!(chapter && chapter.id !== 1 && chapter.id !== 9), // Only fetch for surahs that need Bismillah
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
@@ -238,7 +245,12 @@ function SurahDetail() {
 
   return (
     <AudioProvider>
-      <SurahDetailWithAudio verses={verses}>
+      <SurahDetailWithAudio verses={
+        // Create combined verses array with Bismillah as verse 0 for proper audio sequencing
+        chapter && chapter.id !== 9 && chapter.id !== 1 && bismillahVerse 
+          ? [bismillahVerse, ...verses]
+          : verses
+      }>
         <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50">
           <div className="container mx-auto px-4 py-8">
         {/* Navigation */}
