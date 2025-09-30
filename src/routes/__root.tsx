@@ -17,6 +17,7 @@ import { TranslationProvider } from '../contexts/TranslationContext'
 import { RecitationProvider } from '../contexts/RecitationContext'
 import { AudioProvider } from '../contexts/AudioContext'
 import { LanguageProvider } from '../contexts/LanguageContext'
+import { QuranChatbot } from '../components/QuranChatbot'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -57,7 +58,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <LanguageProvider>
           <TranslationProvider>
             <RecitationProvider>
-              <AudioProvider>{children}</AudioProvider>
+              <AudioProvider>
+                {children}
+                <QuranChatbot />
+              </AudioProvider>
             </RecitationProvider>
           </TranslationProvider>
         </LanguageProvider>

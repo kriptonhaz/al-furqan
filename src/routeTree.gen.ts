@@ -21,6 +21,7 @@ import { Route as ApiTranslationsRouteImport } from './routes/api.translations'
 import { Route as ApiSurahRouteImport } from './routes/api.surah'
 import { Route as ApiSseRouteImport } from './routes/api.sse'
 import { Route as ApiRecitationsRouteImport } from './routes/api.recitations'
+import { Route as ApiQuranChatRouteImport } from './routes/api.quran-chat'
 import { Route as ApiMessagesRouteImport } from './routes/api.messages'
 import { Route as ApiMcpTodosRouteImport } from './routes/api.mcp-todos'
 import { Route as ApiLanguagesRouteImport } from './routes/api.languages'
@@ -94,6 +95,11 @@ const ApiRecitationsRoute = ApiRecitationsRouteImport.update({
   path: '/api/recitations',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiQuranChatRoute = ApiQuranChatRouteImport.update({
+  id: '/api/quran-chat',
+  path: '/api/quran-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiMessagesRoute = ApiMessagesRouteImport.update({
   id: '/api/messages',
   path: '/api/messages',
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/api/languages': typeof ApiLanguagesRoute
   '/api/mcp-todos': typeof ApiMcpTodosRoute
   '/api/messages': typeof ApiMessagesRoute
+  '/api/quran-chat': typeof ApiQuranChatRoute
   '/api/recitations': typeof ApiRecitationsRoute
   '/api/sse': typeof ApiSseRoute
   '/api/surah': typeof ApiSurahRoute
@@ -190,6 +197,7 @@ export interface FileRoutesByTo {
   '/api/languages': typeof ApiLanguagesRoute
   '/api/mcp-todos': typeof ApiMcpTodosRoute
   '/api/messages': typeof ApiMessagesRoute
+  '/api/quran-chat': typeof ApiQuranChatRoute
   '/api/recitations': typeof ApiRecitationsRoute
   '/api/sse': typeof ApiSseRoute
   '/api/surah': typeof ApiSurahRoute
@@ -217,6 +225,7 @@ export interface FileRoutesById {
   '/api/languages': typeof ApiLanguagesRoute
   '/api/mcp-todos': typeof ApiMcpTodosRoute
   '/api/messages': typeof ApiMessagesRoute
+  '/api/quran-chat': typeof ApiQuranChatRoute
   '/api/recitations': typeof ApiRecitationsRoute
   '/api/sse': typeof ApiSseRoute
   '/api/surah': typeof ApiSurahRoute
@@ -245,6 +254,7 @@ export interface FileRouteTypes {
     | '/api/languages'
     | '/api/mcp-todos'
     | '/api/messages'
+    | '/api/quran-chat'
     | '/api/recitations'
     | '/api/sse'
     | '/api/surah'
@@ -271,6 +281,7 @@ export interface FileRouteTypes {
     | '/api/languages'
     | '/api/mcp-todos'
     | '/api/messages'
+    | '/api/quran-chat'
     | '/api/recitations'
     | '/api/sse'
     | '/api/surah'
@@ -297,6 +308,7 @@ export interface FileRouteTypes {
     | '/api/languages'
     | '/api/mcp-todos'
     | '/api/messages'
+    | '/api/quran-chat'
     | '/api/recitations'
     | '/api/sse'
     | '/api/surah'
@@ -324,6 +336,7 @@ export interface RootRouteChildren {
   ApiLanguagesRoute: typeof ApiLanguagesRoute
   ApiMcpTodosRoute: typeof ApiMcpTodosRoute
   ApiMessagesRoute: typeof ApiMessagesRoute
+  ApiQuranChatRoute: typeof ApiQuranChatRoute
   ApiRecitationsRoute: typeof ApiRecitationsRoute
   ApiSseRoute: typeof ApiSseRoute
   ApiSurahRoute: typeof ApiSurahRoute
@@ -428,6 +441,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiRecitationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/quran-chat': {
+      id: '/api/quran-chat'
+      path: '/api/quran-chat'
+      fullPath: '/api/quran-chat'
+      preLoaderRoute: typeof ApiQuranChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/messages': {
       id: '/api/messages'
       path: '/api/messages'
@@ -524,6 +544,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiLanguagesRoute: ApiLanguagesRoute,
   ApiMcpTodosRoute: ApiMcpTodosRoute,
   ApiMessagesRoute: ApiMessagesRoute,
+  ApiQuranChatRoute: ApiQuranChatRoute,
   ApiRecitationsRoute: ApiRecitationsRoute,
   ApiSseRoute: ApiSseRoute,
   ApiSurahRoute: ApiSurahRoute,
