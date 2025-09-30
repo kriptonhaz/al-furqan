@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 120 120"
+     width="120" height="120"
+     role="img"
+     aria-label="Quran verse marker frame">
+  <!-- Use currentColor for easy CSS theming -->
+  <defs>
+    <style>
+      .frame-stroke { stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+      .petal { fill: currentColor; opacity: 0.06; }
+      .dot { fill: currentColor; }
+      .num { font-family: "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic", serif; font-size: 26px; fill: currentColor; text-anchor: middle; dominant-baseline: middle; }
+    </style>
+  </defs>
+
+  <!-- outer decorative ring -->
+  <g transform="translate(60,60)">
+    <circle r="44" class="frame-stroke" opacity="0.95"/>
+
+    <!-- radial floral petals (8) -->
+    <g id="petals">
+      <!-- a single petal path, we'll replicate with rotate -->
+      <path d="M0,-46 C6,-52 18,-52 22,-46 C18,-40 6,-40 0,-46 Z" class="petal"/>
+      <path d="M0,-46 C6,-52 18,-52 22,-46 C18,-40 6,-40 0,-46 Z" class="frame-stroke" fill="none" />
+    </g>
+
+    <!-- replicate petals around circle -->
+    <g>
+      <use href="#petals" transform="rotate(0)"/>
+      <use href="#petals" transform="rotate(45)"/>
+      <use href="#petals" transform="rotate(90)"/>
+      <use href="#petals" transform="rotate(135)"/>
+      <use href="#petals" transform="rotate(180)"/>
+      <use href="#petals" transform="rotate(225)"/>
+      <use href="#petals" transform="rotate(270)"/>
+      <use href="#petals" transform="rotate(315)"/>
+    </g>
+
+    <!-- inner ornamental ring -->
+    <circle r="30" class="frame-stroke"/>
+
+    <!-- small decorative dots around inner ring -->
+    <g>
+      <circle cx="0" cy="-30" r="1.8" class="dot"/>
+      <circle cx="21" cy="-21" r="1.8" class="dot"/>
+      <circle cx="30" cy="0" r="1.8" class="dot"/>
+      <circle cx="21" cy="21" r="1.8" class="dot"/>
+      <circle cx="0" cy="30" r="1.8" class="dot"/>
+      <circle cx="-21" cy="21" r="1.8" class="dot"/>
+      <circle cx="-30" cy="0" r="1.8" class="dot"/>
+      <circle cx="-21" cy="-21" r="1.8" class="dot"/>
+    </g>
+
+    <!-- tiny flourish paths for extra authenticity -->
+    <path d="M-14,-6 q14,-12 28,0" class="frame-stroke" opacity="0.9"/>
+    <path d="M-14,6 q14,12 28,0" class="frame-stroke" opacity="0.9"/>
+
+    <!-- center circle behind number -->
+    <circle r="17" fill="white" opacity="1"/>
+
+    <!-- number placeholder (Arabic-Indic numerals recommended) -->
+    <!-- Put the Arabic-Indic number here, e.g., ١, ٢, ٣ -->
+    <text x="0" y="0" class="num" id="verse-number">١</text>
+  </g>
+</svg>
