@@ -8,13 +8,14 @@ import {
   CardTitle,
 } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
-import { useEffect, useCallback, useState } from 'react'
+import { useEffect, useCallback } from 'react'
 import type { Chapter, Verse } from '../../types/surah'
 import { VerseNumber } from '../../components/VerseNumber'
 import { TranslationsDropdown } from '../../components/TranslationsDropdown'
 import { RecitationDropdown } from '../../components/RecitationDropdown'
 import { ScrollToTopButton } from '../../components/ScrollToTopButton'
 import { useTranslation } from '../../contexts/TranslationContext'
+import { useRecitation } from '../../contexts/RecitationContext'
 import { FootnoteText } from '../../components/FootnoteText'
 import { AudioProvider } from '../../contexts/AudioContext'
 import { MiniPlayer } from '../../components/MiniPlayer'
@@ -46,12 +47,13 @@ const fetchChapterById = async (id: string): Promise<Chapter | null> => {
 const fetchVersesByChapter = async (
   chapterNumber: string,
   translationId: string,
+  recitationId: string,
   page: number = 1,
   perPage: number = 50,
 ): Promise<{ verses: Verse[]; hasMore: boolean; totalVerses: number }> => {
   try {
     const response = await fetch(
-      `/api/verses/${chapterNumber}?page=${page}&per_page=${perPage}&translation_id=${translationId}`,
+      `/api/verses/${chapterNumber}?page=${page}&per_page=${perPage}&translation_id=${translationId}&recitation_id=${recitationId}`,
     )
     const data = await response.json()
 
@@ -95,7 +97,7 @@ const fetchBismillahVerse = async (translationId: string): Promise<Verse | null>
 function SurahDetail() {
   const { id } = Route.useParams()
   const { selectedTranslationId } = useTranslation()
-  const [selectedRecitationId, setSelectedRecitationId] = useState('2') // Default to AbdulBaset AbdulSamad Murattal
+  const { selectedRecitationId } = useRecitation()
 
   // Scroll to top when surah changes
   useEffect(() => {
@@ -134,8 +136,8 @@ function SurahDetail() {
     isLoading: versesLoading,
     error: versesError,
   } = useInfiniteQuery({
-    queryKey: ['verses', id, selectedTranslationId],
-    queryFn: ({ pageParam = 1 }) => fetchVersesByChapter(id, selectedTranslationId, pageParam, 50),
+    queryKey: ['verses', id, selectedTranslationId, selectedRecitationId],
+    queryFn: ({ pageParam = 1 }) => fetchVersesByChapter(id, selectedTranslationId, selectedRecitationId, pageParam, 50),
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.hasMore ? allPages.length + 1 : undefined
     },
@@ -273,12 +275,13 @@ function SurahDetail() {
             </CardDescription>
 
             {/* Translations and Recitation Dropdowns */}
-            <div className="mb-6 flex flex-col sm:flex-row justify-center gap-4">
-              <TranslationsDropdown />
-              <RecitationDropdown 
-                selectedRecitationId={selectedRecitationId}
-                onRecitationChange={setSelectedRecitationId}
-              />
+            <div className="mb-6 flex flex-col sm:flex-row justify-center gap-4 px-4">
+              <div className="w-full sm:w-auto">
+                <TranslationsDropdown />
+              </div>
+              <div className="w-full sm:w-auto">
+                <RecitationDropdown />
+              </div>
             </div>
 
             <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">

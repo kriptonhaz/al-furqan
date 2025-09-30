@@ -15,6 +15,7 @@ export const Route = createFileRoute('/api/verses/$chapterNumber')({
           const page = url.searchParams.get('page') || '1'
           const perPage = url.searchParams.get('per_page') || '50'
           const translationId = url.searchParams.get('translation_id') || '85'
+          const recitationId = url.searchParams.get('recitation_id') || '7'
 
           // Get environment variables
           const contentApiUrl = process.env.QURAN_CONTENT_API_BASE_URL
@@ -53,7 +54,7 @@ export const Route = createFileRoute('/api/verses/$chapterNumber')({
                 searchParams: {
                   fields: 'text_uthmani,translations,audio_files',
                   translations: translationId,
-                  audio: 7,
+                  audio: recitationId,
                   page: page,
                   per_page: perPage,
                 },

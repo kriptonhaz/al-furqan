@@ -7,10 +7,10 @@ import {
   SelectValue,
 } from './ui/select'
 import type { Recitation } from '../types/surah'
+import { useRecitation } from '../contexts/RecitationContext'
 
 interface RecitationDropdownProps {
-  selectedRecitationId?: string
-  onRecitationChange?: (recitationId: string) => void
+  // Remove props since we'll use global state
 }
 
 interface RecitationsApiResponse {
@@ -27,10 +27,8 @@ const fetchRecitations = async (): Promise<Recitation[]> => {
   return data.data
 }
 
-export function RecitationDropdown({ 
-  selectedRecitationId = '2', // Default to AbdulBaset AbdulSamad Murattal
-  onRecitationChange 
-}: RecitationDropdownProps) {
+export function RecitationDropdown({}: RecitationDropdownProps) {
+  const { selectedRecitationId, setSelectedRecitationId } = useRecitation()
   const { data: recitations, isLoading, error } = useQuery({
     queryKey: ['recitations'],
     queryFn: fetchRecitations,
@@ -62,7 +60,7 @@ export function RecitationDropdown({
   return (
     <div className="flex items-center gap-2">
       <span className="text-sm font-medium text-primary-700">Recitation:</span>
-      <Select value={selectedRecitationId} onValueChange={onRecitationChange}>
+      <Select value={selectedRecitationId} onValueChange={setSelectedRecitationId}>
         <SelectTrigger className="w-[280px]">
           <SelectValue>
             {selectedRecitation && (
